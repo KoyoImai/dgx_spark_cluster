@@ -54,9 +54,7 @@ mprg@spark-3894:~/Desktop$ ip a show enP7s7
     altname enP7p1s0
     inet 10.0.0.8/24 brd 10.0.0.255 scope global noprefixroute enP7s7
        valid_lft forever preferred_lft forever
-
 ```
-
 
 
 ### 計算用nodeでipアドレスを固定
