@@ -38,7 +38,7 @@ mprg@spark-3894:~/Desktop$
 `Wired connection 6`が増設したハブですので、こちらのIPアドレスを固定します。
 `nmcli`コマンドでipアドレスを固定します。このとき、ipアドレスは`10.0.0.xxx`とし、`xxx`は重複をなくすため、研究室内で割り振られたDGX Sparkの番号にしています。
 ```
-# 有線接続のIPアドレスを10.0.0.8に変更（接続名は上で確認した"Wired connection 3"）
+# 有線接続のIPアドレスを10.0.0.8に変更（接続名は上で確認した"Wired connection 6"）
 mprg@spark-3894:~/Desktop$ sudo nmcli con mod "Wired connection 6" \
   ipv4.method manual \
   ipv4.addresses 10.0.0.8/24 \
@@ -52,11 +52,13 @@ mprg@spark-3894:~/Desktop$ sudo nmcli con up "Wired connection 6"
 
 # 確認
 mprg@spark-3894:~/Desktop$ ip a show enx6c6e0705ec11
-2: enP7s7: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
-    link/ether 4c:bb:47:2f:38:94 brd ff:ff:ff:ff:ff:ff
-    altname enP7p1s0
-    inet 10.0.0.8/24 brd 10.0.0.255 scope global noprefixroute enP7s7
+11: enx6c6e0705ec11: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 6c:6e:07:05:ec:11 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.0.8/24 brd 10.0.0.255 scope global noprefixroute enx6c6e0705ec11
        valid_lft forever preferred_lft forever
+    inet6 fe80::1dfa:8dc8:c3c9:818b/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+
 ```
 
 
