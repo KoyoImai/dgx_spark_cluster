@@ -140,3 +140,5 @@ mprg@spark-fb97:~/Desktop$ ip a show enP7s7
        valid_lft forever preferred_lft forever
 mprg@spark-fb97:~/Desktop$ 
 ```
+残りの計算用nodeについては、上記と同じ手順によってIPアドレスを固定する。
+IPアドレスは`10.0.0.xxx`とし、`xxx`は研究室内のDGX Sparkに割り当てた番号とする。
