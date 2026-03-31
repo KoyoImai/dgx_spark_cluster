@@ -34,13 +34,29 @@ mprg@spark-3894:~/Desktop$
 `nmcli`コマンドでipアドレスを固定します。このとき、ipアドレスは`10.0.0.xxx`とし、`xxx`は重複をなくすため、研究室内で割り振られたDGX Sparkの番号にしています。
 
 ```
-sudo nmcli con mod "Wired connection 3" \
+# 有線接続のIPアドレスを10.0.0.8に変更（接続名は上で確認した"Wired connection 3"）
+mprg@spark-3894:~/Desktop$ sudo nmcli con mod "Wired connection 3" \
   ipv4.method manual \
   ipv4.addresses 10.0.0.8/24 \
   ipv4.gateway "" \
   ipv4.dns ""
 
+
+# 設定を反映
+mprg@spark-3894:~/Desktop$ sudo nmcli con up "Wired connection 3"
+接続が正常にアクティベートされました (D-Bus アクティブパス: /org/freedesktop/NetworkManager/ActiveConnection/7)
+
+
+# 確認
+mprg@spark-3894:~/Desktop$ ip a show enP7s7
+2: enP7s7: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether 4c:bb:47:2f:38:94 brd ff:ff:ff:ff:ff:ff
+    altname enP7p1s0
+    inet 10.0.0.8/24 brd 10.0.0.255 scope global noprefixroute enP7s7
+       valid_lft forever preferred_lft forever
+
 ```
+
 
 
 ### 計算用nodeでipアドレスを固定
