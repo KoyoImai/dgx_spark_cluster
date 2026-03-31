@@ -143,3 +143,18 @@ mprg@spark-fb97:~/Desktop$
 ```
 残りの計算用nodeについては、上記と同じ手順によってIPアドレスを固定する。
 IPアドレスは`10.0.0.xxx`とし、`xxx`は研究室内のDGX Sparkに割り当てた番号とする。
+
+### 各nodeで`/etc/hosts`を設定
+管理者nodeと計算用nodeで`/etc/hosts`に以下の内容を追加します。
+```
+sudo bash -c 'cat >> /etc/hosts << EOF
+
+# DGX Spark cluster
+10.0.0.8    node8
+10.0.0.15   node15
+10.0.0.16   node16
+10.0.0.17   node17
+10.0.0.18   node18
+EOF'
+```
+
