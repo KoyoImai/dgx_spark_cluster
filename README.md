@@ -12,6 +12,8 @@
 
 ## ステップ1
 ### 管理者nodeでipアドレスを固定
+`nmcli`コマンドでipアドレスを固定します。このとき、ipアドレスは`10.0.0.xxx`とし、`xxx`は重複をなくすため、研究室内で割り振られたDGX Sparkの番号にしています。
+
 ```
 sudo nmcli con mod "Wired connection 3" \
   ipv4.method manual \
