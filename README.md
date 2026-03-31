@@ -112,5 +112,31 @@ mprg@spark-fb97:~/Desktop$ ip a
     inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
        valid_lft forever preferred_lft forever
 mprg@spark-fb97:~/Desktop$ 
+```
 
+上記の結果から、`有線接続 3`がenP7s7（RJ45）に対応していることがわかるので、`有線接続 3`を指定してIPアドレスを固定します。
+
+```
+# 有線接続のIPアドレスを10.0.0.15に変更（接続名は上で確認した"有線接続 3"）
+mprg@spark-fb97:~/Desktop$ sudo nmcli con mod "有線接続 3" \
+  connection.interface-name enP7s7 \
+  ipv4.method manual \
+  ipv4.addresses 10.0.0.15/24 \
+  ipv4.gateway "" \
+  ipv4.dns ""
+
+# 設定を有効化
+mprg@spark-fb97:~/Desktop$ sudo nmcli con up "有線接続 3"
+接続が正常にアクティベートされました (D-Bus アクティブパス: /org/freedesktop/NetworkManager/ActiveConnection/181)
+
+# 確認
+mprg@spark-fb97:~/Desktop$ ip a show enP7s7
+2: enP7s7: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether 4c:bb:47:2f:fb:97 brd ff:ff:ff:ff:ff:ff
+    altname enP7p1s0
+    inet 10.0.0.15/24 brd 10.0.0.255 scope global noprefixroute enP7s7
+       valid_lft forever preferred_lft forever
+    inet6 fe80::1646:cdab:55d3:2585/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+mprg@spark-fb97:~/Desktop$ 
 ```
