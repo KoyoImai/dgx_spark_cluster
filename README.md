@@ -1,13 +1,13 @@
 # DGX Spark Cluster構築
 
-# 前準備
+## 前準備
 ・DGX Spark5台（管理者node用1台，計算用node4台） \
 ・RJ45 Ethernet スイッチ（8ポート） \
 ・QFSPケーブル2本 \
 ・LANケーブル5本 \
 ・USB-Cハブ（管理者nodeのRJ45増設用）
 
-# 構成（予定）
+## 構成（予定）
 ・管理者node : DGX Spark 08 \
 ・計算用node : DGX Spark 15 ~ 18 \
 ・管理者nodeと計算用nodeをRJ45 Ethernet スイッチ経由で接続 \
