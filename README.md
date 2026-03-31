@@ -9,6 +9,7 @@
 # 構成（予定）
 ・管理者node : DGX Spark 08
 ・計算用node : DGX Spark 15 ~ 18
+・管理者nodeと計算用nodeをRJ45 Ethernet スイッチ経由で接続
 
 ## ステップ1
 ### 管理者nodeでipアドレスを固定
@@ -28,6 +29,8 @@ Wired connection 4  e77d481f-837c-349b-8c5a-de01b5f2860e  ethernet  --
 Wired connection 5  8a5c2867-8304-3d08-8a1f-0ae0530676f1  ethernet  --      
 mprg@spark-3894:~/Desktop$
 ```
+接続名を確認すると、`ethernet  enP7s7`の名前が`Wired connection 3`とわかります。
+
 `nmcli`コマンドでipアドレスを固定します。このとき、ipアドレスは`10.0.0.xxx`とし、`xxx`は重複をなくすため、研究室内で割り振られたDGX Sparkの番号にしています。
 
 ```
