@@ -159,4 +159,12 @@ sudo bash -c 'cat >> /etc/hosts << EOF
 10.0.0.18   node18
 EOF'
 ```
+`/etc/hosts`の内容を追加したら、pingが通るかを確認してください。
+```
+ping -c 3 node8
+ping -c 3 node15
+ping -c 3 node16
+ping -c 3 node17
+ping -c 3 node18
+```
 
