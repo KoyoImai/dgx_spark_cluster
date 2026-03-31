@@ -111,10 +111,11 @@ mprg@spark-fb97:~/Desktop$ ip a
     link/ether 96:6d:d0:21:f3:17 brd ff:ff:ff:ff:ff:ff
     inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
        valid_lft forever preferred_lft forever
-mprg@spark-fb97:~/Desktop$ 
 ```
 
 上記の結果から、`有線接続 3`がenP7s7（RJ45）に対応していることがわかるので、`有線接続 3`を指定してIPアドレスを固定します。
+もし`有線接続1~5`のどれがenP7s7（RJ45）に対応しているかわからない場合、`nmcli con show "有線接続 x" | grep interface`を実行して確認してください。
+（おそらく、`有線接続 3`がenP7s7（RJ45）に対応していると思います。）
 
 ```
 # 有線接続のIPアドレスを10.0.0.15に変更（接続名は上で確認した"有線接続 3"）
