@@ -33,14 +33,13 @@ Wired connection 5  8a5c2867-8304-3d08-8a1f-0ae0530676f1  ethernet  --
 Wired connection 6  6a80e8cb-9493-3ffb-b5fe-e318daead83b  ethernet  --      
 mprg@spark-3894:~/Desktop$ 
 ```
-接続名を確認すると、`ethernet  enP7s7`の名前が`Wired connection 3`とあり、これは研究室のネットワークに接続されています。 \
+接続名を確認すると、`ethernet  enP7s7`の名前が`Wired connection 3`とあり、これは研究室のネットワークに接続されています。 
+
 `Wired connection 6`が増設したハブですので、こちらのIPアドレスを固定します。
-
 `nmcli`コマンドでipアドレスを固定します。このとき、ipアドレスは`10.0.0.xxx`とし、`xxx`は重複をなくすため、研究室内で割り振られたDGX Sparkの番号にしています。
-
 ```
 # 有線接続のIPアドレスを10.0.0.8に変更（接続名は上で確認した"Wired connection 3"）
-mprg@spark-3894:~/Desktop$ sudo nmcli con mod "Wired connection 3" \
+mprg@spark-3894:~/Desktop$ sudo nmcli con mod "Wired connection 6" \
   ipv4.method manual \
   ipv4.addresses 10.0.0.8/24 \
   ipv4.gateway "" \
@@ -48,12 +47,11 @@ mprg@spark-3894:~/Desktop$ sudo nmcli con mod "Wired connection 3" \
 
 
 # 設定を反映
-mprg@spark-3894:~/Desktop$ sudo nmcli con up "Wired connection 3"
+mprg@spark-3894:~/Desktop$ sudo nmcli con up "Wired connection 6"
 接続が正常にアクティベートされました (D-Bus アクティブパス: /org/freedesktop/NetworkManager/ActiveConnection/7)
 
-
 # 確認
-mprg@spark-3894:~/Desktop$ ip a show enP7s7
+mprg@spark-3894:~/Desktop$ ip a show enx6c6e0705ec11
 2: enP7s7: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
     link/ether 4c:bb:47:2f:38:94 brd ff:ff:ff:ff:ff:ff
     altname enP7p1s0
