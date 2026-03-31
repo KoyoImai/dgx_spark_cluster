@@ -61,5 +61,56 @@ mprg@spark-3894:~/Desktop$ ip a show enx6c6e0705ec11
 
 
 ### 計算用nodeでipアドレスを固定
+管理者nodeと同様に計算用nodeもIPアドレスを固定する。
+計算用nodeは4つあるため、全て以下の手順でIPアドレスを固定する。
 
+まず、利用可能なネットワークとインターフェースのIPを確認します。
+```
+# 利用可能なネットワークの確認
+mprg@spark-fb97:~/Desktop$ nmcli con show
+NAME        UUID                                  TYPE      DEVICE  
+MPRG        ee77595c-01d0-42a5-824f-c960106118da  wifi      wlP9s9  
+有線接続 3  8905f334-ef05-360f-ac2e-a697a27a9901  ethernet  enP7s7  
+lo          5f898638-7da0-4bf1-96f3-f5a75f1b5d56  loopback  lo      
+docker0     90994e3c-4b64-4b86-b356-8caf531f0c77  bridge    docker0 
+iPhone SE2  9000673e-cd0e-4f09-a8a4-3acd00ee5202  wifi      --      
+有線接続 1  f2f71b9d-1533-34d0-90c2-38b166f58201  ethernet  --      
+有線接続 2  6cae8701-bb5b-3695-a351-2c5ae41fe6e3  ethernet  --      
+有線接続 4  427f80ca-feaa-34e4-add6-168638368b5c  ethernet  --      
+有線接続 5  9cbf895e-c8dd-33c6-ac3f-7ceecbafa261  ethernet  --      
 
+# インターフェースのIPを確認
+mprg@spark-fb97:~/Desktop$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute 
+       valid_lft forever preferred_lft forever
+2: enP7s7: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether 4c:bb:47:2f:fb:97 brd ff:ff:ff:ff:ff:ff
+    altname enP7p1s0
+    inet6 fe80::1646:cdab:55d3:2585/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+3: enp1s0f0np0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether 4c:bb:47:2f:fb:98 brd ff:ff:ff:ff:ff:ff
+4: enp1s0f1np1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether 4c:bb:47:2f:fb:99 brd ff:ff:ff:ff:ff:ff
+5: enP2p1s0f0np0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether 4c:bb:47:2f:fb:9c brd ff:ff:ff:ff:ff:ff
+6: enP2p1s0f1np1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN group default qlen 1000
+    link/ether 4c:bb:47:2f:fb:9d brd ff:ff:ff:ff:ff:ff
+7: wlP9s9: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether f8:3d:c6:56:9a:8c brd ff:ff:ff:ff:ff:ff
+    altname wlP9p1s0
+    inet 192.168.111.87/24 brd 192.168.111.255 scope global dynamic noprefixroute wlP9s9
+       valid_lft 65609sec preferred_lft 65609sec
+    inet6 fe80::7438:1e9e:91e8:25b0/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+8: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default 
+    link/ether 96:6d:d0:21:f3:17 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+mprg@spark-fb97:~/Desktop$ 
+
+```
