@@ -394,3 +394,6 @@ df -h | grep home4cluster
 
 
 ## ステップ3 : MUNGEの設定
+Slurmの各node間で安全な認証と認可を提供するため、MUNGEを導入します。
+MUNGEを導入し、全nodeで同じ`munge.key`を共有することで、Slurmが「このjob要求は、本当にそのユーザー、そのnodeから来たのか」を安全に確認することが可能になります。
+
