@@ -461,5 +461,4 @@ sudo chmod 400 /etc/munge/munge.key
 # mungeの再起動＆有効化
 sudo systemctl restart munge
 sudo systemctl enable munge
-sudo systemctl restart munge
 ```
