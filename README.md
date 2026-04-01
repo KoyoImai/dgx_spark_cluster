@@ -177,32 +177,9 @@ job管理のため、管理者nodeと計算用nodeの時刻設定を揃えて多
 なので、時刻設定の確認と調整を先にしましょう。
 
 また、基本パッケージのインストールなどを行います。
-まず、管理者nodeで以下を実行してください。
-```
-# NTPサーバーによる時刻同期
-sudo apt install -y ntpsec
-
-# time zoneを全nodeで同じにする
-sudo timedatectl set-timezone Asia/Tokyo
-
-# 基本的なパッケージのインストール（基本的にsparkには入っていると思いますが一応）
-sudo apt install -y ssh net-tools vim htop iotop tmux screen wget curl \
-  build-essential cmake python3 python3-pip
-
-# 自動更新の停止
-mprg@spark-3894:~/Desktop$ sudo vim /etc/apt/apt.conf.d/10periodic
-mprg@spark-3894:~/Desktop$ cat /etc/apt/apt.conf.d/10periodic
-APT::Periodic::Update-Package-Lists "0";
-APT::Periodic::Download-Upgradeable-Packages "0";
-APT::Periodic::AutocleanInterval "0";
-```
-
-## ステップ2 : NFSサーバーの設定
-複数のnodeから同じファイル群を、同じパスで共有して使えるようにするため、NSFサーバーを導入します（MPRGクラスタｍｐNFSサーバーを使用しているはずです）。
-
-### 管理者nodeでNFSを設定
-まず、管理者nodeでNFSサーバーを設定します。
-`pool ntp.nict.jp iburst`と`restrict 10.0.0.0 mask 255.255.255.0 nomodify notrap`を`/etc/ntpsec/ntp.conf`に追加します。
+まず、時刻同期を行います。
+管理者nodeの設定から始めます。
+まず、`pool ntp.nict.jp iburst`と`restrict 10.0.0.0 mask 255.255.255.0 nomodify notrap`を`/etc/ntpsec/ntp.conf`に追加します。
 `/etc/ntpsec/ntp.conf`の内容は以下の通りです。
 ```
 mprg@spark-3894:~$ sudo apt install -y ntpsec
@@ -273,10 +250,55 @@ mprg@spark-3894:~/Desktop$ sudo systemctl enable ntpsec
 Synchronizing state of ntpsec.service with SysV service script with /usr/lib/systemd/systemd-sysv-install.
 Executing: /usr/lib/systemd/systemd-sysv-install enable ntpsec
 ```
-
-### 計算用nodeでNTPクライアントを設定
-計算用nodeでNTPクライアントを設定するために以下のコマンドを順番に設定してください。
+計算用nodeでNTPクライアントを設定するために、まず、`systemd-timesyncd`をインストールします。
 ```
 sudo apt install -y systemd-timesyncd
 ```
+続いて、`/etc/systemd/timesyncd.conf`に`NTP=10.0.0.8`を追記して、管理者nodeと時刻を同期するようにしてください。
+最初は`#NTP=`とコメントアウトされていると思うので、コメントアウトを外して追記してください。
+その上で、以下のコマンドで時刻動機を開始し、同期ができているかを確認してください。
+```
+mprg@spark-fb97:~$ sudo systemctl restart systemd-timesyncd
+mprg@spark-fb97:~$ sudo systemctl enable systemd-timesyncd
+mprg@spark-fb97:~$ timedatectl timesync-status
+       Server: 10.0.0.8 (10.0.0.8)
+Poll interval: 1min 4s (min: 32s; max 34min 8s)
+         Leap: normal
+      Version: 4
+      Stratum: 2
+    Reference: 85F3EEA3
+    Precision: 1us (-24)
+Root distance: 11.825ms (max: 5s)
+       Offset: +8.073ms
+        Delay: 312us
+       Jitter: 0
+ Packet count: 1
+    Frequency: +172.328ppm
+```
+以上で時刻同期は完了です。
+time zoneを同じにすることと自動更新の停止を全てのnodeで行ってください。
+コマンドは以下の通りです。
+```
+# time zoneを全nodeで同じにする
+sudo timedatectl set-timezone Asia/Tokyo
 
+# 基本的なパッケージのインストール（基本的にsparkには入っていると思いますが一応）
+sudo apt install -y ssh net-tools vim htop iotop tmux screen wget curl \
+  build-essential cmake python3 python3-pip
+
+# 自動更新の停止
+mprg@spark-3894:~/Desktop$ sudo vim /etc/apt/apt.conf.d/10periodic
+mprg@spark-3894:~/Desktop$ cat /etc/apt/apt.conf.d/10periodic
+APT::Periodic::Update-Package-Lists "0";
+APT::Periodic::Download-Upgradeable-Packages "0";
+APT::Periodic::AutocleanInterval "0";
+```
+
+## ステップ2 : NFSサーバーの設定
+複数のnodeから同じファイル群を、同じパスで共有して使えるようにするため、NSFサーバーを導入します（MPRGクラスタｍｐNFSサーバーを使用しているはずです）。
+
+### 管理者nodeでNFSを設定
+まず、管理者nodeでNFSサーバーを設定します。
+
+
+### 計算用nodeでNTPクライアントを設定
