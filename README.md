@@ -358,7 +358,7 @@ mprg@spark-3894:~/Desktop$ sudo mount -a
 mprg@spark-3894:~/Desktop$ sudo systemctl daemon-reload
 ```
 
-### 計算用nodeでNTPクライアントを設定
+### 計算用nodeでNFSクライアントを設定
 計算用nodeでNFSクライアントを設定します。
 以下のコマンドを実行して、NFSクライアントをインストールしてください。
 ```
