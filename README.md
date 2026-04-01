@@ -467,10 +467,11 @@ sudo systemctl enable munge
 **[参考1:Slurmの構築(1)](https://qiita.com/kccs_takahiro-kawamura/items/bb0ffe731030aec3e4f5)**
 
 複数の計算nodeを1つのクラスタとしてまとめて管理し、ユーザーのjob投入に対して適切な計算資源を自動で割り当てるためにSlurmを導入します。
-まず、全てのnodeでSlurmをインストールします。
+まず、全てのnodeで必要なパッケージをインストールします。
 以下のコマンドを実行してください。
 ```
 sudo apt install build-essential cmake mailutils libmysqlclient-dev lua5.4 liblua5.4-dev libdbus-1-dev
 ```
 上記のコマンドを実行すると、mail server configurationについて聞かれます。
 「No configuration（設定なし）」を選択します。
+
