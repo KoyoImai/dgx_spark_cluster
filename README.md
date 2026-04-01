@@ -346,3 +346,29 @@ mprg@spark-3894:~/Desktop$
 
 
 ### 計算用nodeでNTPクライアントを設定
+計算用nodeでNFSクライアントを設定します。
+以下のコマンドを実行して、NFSクライアントをインストールしてください。
+```
+sudo apt install -y nfs-common
+```
+NFSクライアントをインストールしたら、`/etc/fstab`にマウント設定を追記します。
+以下の内容を`/etc/fstab`に追記してください。
+```
+# 内容を追記
+mprg@spark-fb97:~$ sudo bash -c 'cat >> /etc/fstab << EOF
+
+### NFS Mount of Home Directory
+10.0.0.8:/home  /home  nfs  defaults,_netdev,vers=4.2,rsize=1048576,wsize=1048576  0  0
+EOF'
+
+# 内容の確認
+mprg@spark-fb97:~$ cat /etc/fstab 
+/dev/disk/by-uuid/d27bfd26-ff30-400e-9eca-9cdf73de9406 / ext4 errors=remount-ro 0 1
+/dev/disk/by-uuid/9DA2-3597 /boot/efi vfat defaults 0 1
+/swap.img none swap sw 0 0
+
+### NFS Mount of Home Directory
+10.0.0.8:/home  /home  nfs  defaults,_netdev,vers=4.2,rsize=1048576,wsize=1048576  0  0
+mprg@spark-fb97:~$ 
+
+```
