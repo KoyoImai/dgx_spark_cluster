@@ -295,6 +295,7 @@ APT::Periodic::AutocleanInterval "0";
 ```
 
 ## ステップ2 : NFSサーバーの設定
+**[参考1:NFSサーバーの設定(１)](https://tech.mntsq.co.jp/entry/2021/04/08/141423)**
 複数のnodeから同じファイル群を、同じパスで共有して使えるようにするため、NSFサーバーを導入します（MPRGクラスタｍｐNFSサーバーを使用しているはずです）。
 
 ### 管理者nodeでNFSを設定
@@ -327,7 +328,7 @@ mprg@spark-3894:~/Desktop$ cat /etc/exports
 
 ### NFS Mount of Home Directory
 /home 10.0.0.0/24(rw,sync,no_subtree_check,no_root_squash)
-
 ```
+これで、`/home`
 
 ### 計算用nodeでNTPクライアントを設定
