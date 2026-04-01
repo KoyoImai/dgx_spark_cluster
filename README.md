@@ -384,3 +384,13 @@ mprg@spark-fb97:~$ cat /etc/fstab
 10.0.0.8:/home  /home4cluster  nfs  defaults,_netdev,vers=4.2,rsize=1048576,wsize=1048576  0  0
 ```
 最後に、実際にマウントを実行します。
+```
+sudo systemctl daemon-reload
+sudo mount -a
+
+# マウント確認
+df -h | grep home4cluster
+```
+
+
+## ステップ3 : MUNGEの設定
