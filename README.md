@@ -168,9 +168,23 @@ ping -c 3 node17
 ping -c 3 node18
 ```
 
-## ステップ1.5 : 時間同期
+## ステップ1.5 : 時間同期とその他
 job管理のため、管理者nodeと計算用nodeの時刻設定を揃えて多く必要がある（by ChatGPT）らしい。
 なので、時刻設定の確認と調整を先にしましょう。
+
+また、基本パッケージのインストールなどを行います。
+以下のコマンドを実行してください。
+```
+# 時刻設定を全nodeで同じにする
+sudo timedatectl set-timezone Asia/Tokyo
+
+# 基本的なパッケージのインストール
+sudo apt install -y ssh net-tools vim htop iotop tmux screen wget curl \
+  build-essential cmake python3 python3-pip
+
+# 自動更新の停止（したほうがいいらしい　by ChatGPT）
+
+```
 
 ## ステップ2 : NFSサーバーの設定
 複数のnodeから同じファイル群を、同じパスで共有して使えるようにするため、NSFサーバーを導入します（MPRGクラスタｍｐNFSサーバーを使用しているはずです）。
