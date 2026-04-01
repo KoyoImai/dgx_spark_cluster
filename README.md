@@ -5,7 +5,7 @@
 ・RJ45 Ethernet スイッチ（8ポート） \
 ・QFSPケーブル2本 \
 ・LANケーブル5本 \
-・ [USB-Cハブ](Anker PowerExpand+ 7-in-1 USB-C PD イーサネット ハブ)（管理者nodeのRJ45増設用）
+・[USB-Cハブ](https://www.ankerjapan.com/products/a8352?srsltid=AfmBOoq95ZKB998T5GecohoCODQpk4HWPhwSNI8mhbB-wakpWkvt89U1)（管理者nodeのRJ45増設用）
 
 ## 構成（予定）
 ・管理者node : DGX Spark 08 \
