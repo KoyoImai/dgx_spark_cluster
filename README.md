@@ -329,6 +329,19 @@ mprg@spark-3894:~/Desktop$ cat /etc/exports
 ### NFS Mount of Home Directory
 /home 10.0.0.0/24(rw,sync,no_subtree_check,no_root_squash)
 ```
-これで、`/home`
+これで、`/home`を計算用nodeと共有することになります。
+`/etc/exports`の変更を反映させるため、NFSサーバーを再起動します。
+```
+# NFSサーバーの再起動
+mprg@spark-3894:~/Desktop$ sudo systemctl restart nfs-server
+mprg@spark-3894:~/Desktop$ sudo systemctl enable nfs-server
+
+# 結果を確認
+mprg@spark-3894:~/Desktop$ sudo exportfs -v
+/home         	10.0.0.0/24(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,no_root_squash,no_all_squash)
+mprg@spark-3894:~/Desktop$ 
+```
+今後、`/home/usr1`や`/home/usr2`のようにユーザーごとのディレクトリを用意して運用する予定です。
+
 
 ### 計算用nodeでNTPクライアントを設定
