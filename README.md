@@ -170,22 +170,26 @@ ping -c 3 node18
 
 ## ステップ1.5 : 時間同期とその他
 **[参考1:パッケージの自動更新(1)](https://qiita.com/ymbk990/items/cabfc383e1c5e35eb4f9)** \
-**[参考2:パッケージの自動更新(2)](https://gihyo.jp/admin/serial/01/ubuntu-recipe/0671)**
+**[参考2:パッケージの自動更新(2)](https://gihyo.jp/admin/serial/01/ubuntu-recipe/0671)** \
+**[参考3:NTPサーバーによる時刻同期(1)](https://www.server-world.info/query?os=Ubuntu_24.04&p=ntp&f=1)**
 
-job管理のため、管理者nodeと計算用nodeの時刻設定を揃えて多く必要がある（by ChatGPT）らしい。
+job管理のため、管理者nodeと計算用nodeの時刻設定を揃えて多く必要がある。
 なので、時刻設定の確認と調整を先にしましょう。
 
 また、基本パッケージのインストールなどを行います。
-以下のコマンドをすべてのnodeで実行してください。
+まず、管理者nodeで以下を実行してください。
 ```
-# 時刻設定を全nodeで同じにする
+# NTPサーバーによる時刻同期
+sudo apt install -y ntpsec
+
+# time zoneを全nodeで同じにする
 sudo timedatectl set-timezone Asia/Tokyo
 
 # 基本的なパッケージのインストール（基本的にsparkには入っていると思いますが一応）
 sudo apt install -y ssh net-tools vim htop iotop tmux screen wget curl \
   build-essential cmake python3 python3-pip
 
-# 自動更新の停止（したほうがいいらしい　by ChatGPT）
+# 自動更新の停止
 mprg@spark-3894:~/Desktop$ sudo vim /etc/apt/apt.conf.d/10periodic
 mprg@spark-3894:~/Desktop$ cat /etc/apt/apt.conf.d/10periodic
 APT::Periodic::Update-Package-Lists "0";
@@ -195,4 +199,70 @@ APT::Periodic::AutocleanInterval "0";
 
 ## ステップ2 : NFSサーバーの設定
 複数のnodeから同じファイル群を、同じパスで共有して使えるようにするため、NSFサーバーを導入します（MPRGクラスタｍｐNFSサーバーを使用しているはずです）。
+
+### 管理者nodeでNFSを設定
+まず、管理者nodeでNFSサーバーを設定します。
+`pool ntp.nict.jp iburst`と`restrict 10.0.0.0 mask 255.255.255.0 nomodify notrap`を`/etc/ntpsec/ntp.conf`に追加します。
+`/etc/ntpsec/ntp.conf`の内容は以下の通りです。
+```
+mprg@spark-3894:~/Desktop$ cat /etc/ntpsec/ntp.conf 
+# /etc/ntpsec/ntp.conf, configuration for ntpd; see ntp.conf(5) for help
+
+driftfile /var/lib/ntpsec/ntp.drift
+leapfile /usr/share/zoneinfo/leap-seconds.list
+
+# To enable Network Time Security support as a server, obtain a certificate
+# (e.g. with Let's Encrypt), configure the paths below, and uncomment:
+# nts cert CERT_FILE
+# nts key KEY_FILE
+# nts enable
+
+# You must create /var/log/ntpsec (owned by ntpsec:ntpsec) to enable logging.
+#statsdir /var/log/ntpsec/
+#statistics loopstats peerstats clockstats
+#filegen loopstats file loopstats type day enable
+#filegen peerstats file peerstats type day enable
+#filegen clockstats file clockstats type day enable
+
+# This should be maxclock 7, but the pool entries count towards maxclock.
+tos maxclock 11
+
+# Comment this out if you have a refclock and want it to be able to discipline
+# the clock by itself (e.g. if the system is not connected to the network).
+tos minclock 4 minsane 3
+
+# Specify one or more NTP servers.
+
+# Public NTP servers supporting Network Time Security:
+# server time.cloudflare.com nts
+
+# Use servers from the NTP Pool Project. Approved by Ubuntu Technical Board
+# on 2011-02-08 (LP: #104525). See https://www.pool.ntp.org/join.html for
+# more information.
+#pool 0.ubuntu.pool.ntp.org iburst
+#pool 1.ubuntu.pool.ntp.org iburst
+#pool 2.ubuntu.pool.ntp.org iburst
+#pool 3.ubuntu.pool.ntp.org iburst
+
+# Use Ubuntu's ntp server as a fallback.
+#server ntp.ubuntu.com
+pool ntp.nict.jp iburst
+
+# Access control configuration; see /usr/share/doc/ntpsec-doc/html/accopt.html
+# for details.
+#
+# Note that "restrict" applies to both servers and clients, so a configuration
+# that might be intended to block requests from certain clients could also end
+# up blocking replies from your own upstream servers.
+
+# By default, exchange time with everybody, but don't allow configuration.
+restrict default kod nomodify nopeer noquery limited
+
+# Local users may interrogate the ntp server more closely.
+restrict 127.0.0.1
+restrict ::1
+
+# クラスタ内ノードからのアクセスを許可
+restrict 10.0.0.0 mask 255.255.255.0 nomodify notrap
+```
 
