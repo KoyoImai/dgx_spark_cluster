@@ -381,7 +381,6 @@ mprg@spark-fb97:~$ cat /etc/fstab
 /swap.img none swap sw 0 0
 
 ### NFS Mount of Home Directory
-10.0.0.8:/home  /home  nfs  defaults,_netdev,vers=4.2,rsize=1048576,wsize=1048576  0  0
-mprg@spark-fb97:~$ 
+10.0.0.8:/home  /home4cluster  nfs  defaults,_netdev,vers=4.2,rsize=1048576,wsize=1048576  0  0
 ```
 最後に、実際にマウントを実行します。
