@@ -3,7 +3,7 @@
 ## 前準備
 ・DGX Spark5台（管理者node用1台，計算用node4台） \
 ・RJ45 Ethernet スイッチ（8ポート） \
-・QFSPケーブル2本 \
+・QSFPケーブル2本 \
 ・LANケーブル6本 \
 ・[USB-Cハブ](https://www.ankerjapan.com/products/a8352?srsltid=AfmBOoq95ZKB998T5GecohoCODQpk4HWPhwSNI8mhbB-wakpWkvt89U1)（管理者nodeのRJ45増設用）
 
@@ -465,3 +465,12 @@ sudo systemctl enable munge
 
 ## ステップ4 : Slurmの構築
 **[参考1:Slurmの構築(1)](https://qiita.com/kccs_takahiro-kawamura/items/bb0ffe731030aec3e4f5)**
+
+複数の計算nodeを1つのクラスタとしてまとめて管理し、ユーザーのjob投入に対して適切な計算資源を自動で割り当てるためにSlurmを導入します。
+まず、全てのnodeでSlurmをインストールします。
+以下のコマンドを実行してください。
+```
+sudo apt install build-essential cmake mailutils libmysqlclient-dev lua5.4 liblua5.4-dev libdbus-1-dev
+```
+上記のコマンドを実行すると、mail server configurationについて聞かれます。
+「No configuration（設定なし）」を選択します。
