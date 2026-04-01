@@ -446,7 +446,7 @@ sudo scp /etc/munge/munge.key mprg@node16:/tmp/munge.key
 sudo scp /etc/munge/munge.key mprg@node17:/tmp/munge.key
 sudo scp /etc/munge/munge.key mprg@node18:/tmp/munge.key
 ```
-各計算nodeの`/tmp/`に`munge.key`をコピーしたら、以下のコマンドを実行してください。
+各計算nodeの`/tmp/`に`munge.key`をコピーしたら、以下のコマンドを全ての計算用nodeで実行してください。
 ```
 # mungeのインストール
 sudo apt install -y munge libmunge-dev
