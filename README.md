@@ -435,5 +435,15 @@ ZIP:             none (0)
 UID:             mprg (1000)
 GID:             mprg (1000)
 LENGTH:          0
-
 ```
+
+### 計算nodeでMUNGEを設定
+管理者nodeの`/etc/munge/munge.key`を全ての計算nodeにコピーします。
+まず、管理者nodeの`munge.key`を全ての計算nodeにコピーするため、以下のコマンドを実行してください。
+```
+sudo scp /etc/munge/munge.key mprg@node15:/tmp/munge.key
+sudo scp /etc/munge/munge.key mprg@node16:/tmp/munge.key
+sudo scp /etc/munge/munge.key mprg@node17:/tmp/munge.key
+sudo scp /etc/munge/munge.key mprg@node18:/tmp/munge.key
+```
+各計算nodeの`/tmp/`に`munge.key`をコピーしたら、以下のコマンドを実行してください。
