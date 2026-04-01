@@ -170,7 +170,7 @@ ping -c 3 node18
 
 ## ステップ1.5 : 時間同期とその他
 **[参考1:パッケージの自動更新(1)](https://qiita.com/ymbk990/items/cabfc383e1c5e35eb4f9)**
-**[参考2:パッケージの自動更新(2)]([https://qiita.com/ymbk990/items/cabfc383e1c5e35eb4f9](https://gihyo.jp/admin/serial/01/ubuntu-recipe/0671))**
+**[参考2:パッケージの自動更新(2)](https://gihyo.jp/admin/serial/01/ubuntu-recipe/0671)**
 
 job管理のため、管理者nodeと計算用nodeの時刻設定を揃えて多く必要がある（by ChatGPT）らしい。
 なので、時刻設定の確認と調整を先にしましょう。
