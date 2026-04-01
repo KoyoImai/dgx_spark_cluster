@@ -462,3 +462,6 @@ sudo chmod 400 /etc/munge/munge.key
 sudo systemctl restart munge
 sudo systemctl enable munge
 ```
+
+## ステップ4 : Slurmの構築
+**[参考1:Slurmの構築(1)](https://qiita.com/kccs_takahiro-kawamura/items/bb0ffe731030aec3e4f5)**
