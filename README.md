@@ -205,6 +205,7 @@ APT::Periodic::AutocleanInterval "0";
 `pool ntp.nict.jp iburst`と`restrict 10.0.0.0 mask 255.255.255.0 nomodify notrap`を`/etc/ntpsec/ntp.conf`に追加します。
 `/etc/ntpsec/ntp.conf`の内容は以下の通りです。
 ```
+mprg@spark-3894:~$ sudo apt install -y ntpsec
 mprg@spark-3894:~/Desktop$ cat /etc/ntpsec/ntp.conf 
 # /etc/ntpsec/ntp.conf, configuration for ntpd; see ntp.conf(5) for help
 
@@ -272,3 +273,10 @@ mprg@spark-3894:~/Desktop$ sudo systemctl enable ntpsec
 Synchronizing state of ntpsec.service with SysV service script with /usr/lib/systemd/systemd-sysv-install.
 Executing: /usr/lib/systemd/systemd-sysv-install enable ntpsec
 ```
+
+### 計算用nodeでNTPクライアントを設定
+計算用nodeでNTPクライアントを設定するために以下のコマンドを順番に設定してください。
+```
+sudo apt install -y systemd-timesyncd
+```
+
