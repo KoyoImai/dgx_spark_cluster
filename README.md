@@ -462,7 +462,4 @@ sudo chmod 400 /etc/munge/munge.key
 sudo systemctl restart munge
 sudo systemctl enable munge
 sudo systemctl restart munge
-
-#
-
 ```
