@@ -265,4 +265,10 @@ restrict ::1
 # クラスタ内ノードからのアクセスを許可
 restrict 10.0.0.0 mask 255.255.255.0 nomodify notrap
 ```
-
+`/etc/ntpsec/ntp.conf`の内容を修正したら、NTPサーバーを再起動して確認を行ってください。
+```
+mprg@spark-3894:~/Desktop$ sudo systemctl restart ntpsec
+mprg@spark-3894:~/Desktop$ sudo systemctl enable ntpsec
+Synchronizing state of ntpsec.service with SysV service script with /usr/lib/systemd/systemd-sysv-install.
+Executing: /usr/lib/systemd/systemd-sysv-install enable ntpsec
+```
