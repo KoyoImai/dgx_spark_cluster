@@ -394,6 +394,46 @@ df -h | grep home4cluster
 
 
 ## ステップ3 : MUNGEの設定
+**[参考1:MUNGEの設定(1)](https://qiita.com/kccs_takahiro-kawamura/items/bb0ffe731030aec3e4f5)**
+
 Slurmの各node間で安全な認証と認可を提供するため、MUNGEを導入します。
 MUNGEを導入し、全nodeで同じ`munge.key`を共有することで、Slurmが「このjob要求は、本当にそのユーザー、そのnodeから来たのか」を安全に確認することが可能になります。
+以下では、MUNGEの設定手順をまとめます。
 
+### 管理者nodeでMUNUGEを設定
+まず、MUNGEをインストールします。
+以下のコマンドを管理者nodeで実行してください。
+```
+sudo apt install -y munge libmunge-dev
+```
+MUNGEのインストールが完了したら、MUNGEの鍵ファイル`munge.key`を生成します。
+`munge.key`を生成するため以下のコマンドを実行してください。
+```
+mprg@spark-3894:/home4cluster$ sudo dd if=/dev/random of=/etc/munge/munge.key bs=1024 count=1
+1+0 records in
+1+0 records out
+1024 bytes (1.0 kB, 1.0 KiB) copied, 9.4736e-05 s, 10.8 MB/s
+mprg@spark-3894:/home4cluster$ sudo chown munge:munge /etc/munge/munge.key
+mprg@spark-3894:/home4cluster$ sudo chmod 400 /etc/munge/munge.key
+mprg@spark-3894:/home4cluster$ sudo systemctl restart munge
+mprg@spark-3894:/home4cluster$ sudo systemctl enable munge
+Synchronizing state of munge.service with SysV service script with /usr/lib/systemd/systemd-sysv-install.
+Executing: /usr/lib/systemd/systemd-sysv-install enable munge
+mprg@spark-3894:/home4cluster$ 
+```
+`munge.key`の生成が完了したら、以下のコマンドで動作を確認してください。
+```
+mprg@spark-3894:/home4cluster$ munge -n | unmunge
+STATUS:          Success (0)
+ENCODE_HOST:     localhost (127.0.0.1)
+ENCODE_TIME:     2026-04-01 20:17:56 +0900 (1775042276)
+DECODE_TIME:     2026-04-01 20:17:56 +0900 (1775042276)
+TTL:             300
+CIPHER:          aes128 (4)
+MAC:             sha256 (5)
+ZIP:             none (0)
+UID:             mprg (1000)
+GID:             mprg (1000)
+LENGTH:          0
+
+```
