@@ -295,7 +295,8 @@ APT::Periodic::AutocleanInterval "0";
 ```
 
 ## ステップ2 : NFSサーバーの設定
-**[参考1:NFSサーバーの設定(１)](https://tech.mntsq.co.jp/entry/2021/04/08/141423)** \
+**[参考1:NFSサーバーの設定(１)](https://tech.mntsq.co.jp/entry/2021/04/08/141423)** 
+
 複数のnodeから同じファイル群を、同じパスで共有して使えるようにするため、NSFサーバーを導入します（MPRGクラスタｍｐNFSサーバーを使用しているはずです）。
 
 ### 管理者nodeでNFSを設定
