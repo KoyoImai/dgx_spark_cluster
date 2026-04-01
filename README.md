@@ -447,3 +447,22 @@ sudo scp /etc/munge/munge.key mprg@node17:/tmp/munge.key
 sudo scp /etc/munge/munge.key mprg@node18:/tmp/munge.key
 ```
 各計算nodeの`/tmp/`に`munge.key`をコピーしたら、以下のコマンドを実行してください。
+```
+# mungeのインストール
+sudo apt install -y munge libmunge-dev
+
+# /tmp/munge.key を /etc/munge/munge.key に移動
+sudo mv /tmp/munge.key /etc/munge/munge.key
+
+# 権限を変更
+sudo chown munge:munge /etc/munge/munge.key
+sudo chmod 400 /etc/munge/munge.key
+
+# mungeの再起動＆有効化
+sudo systemctl restart munge
+sudo systemctl enable munge
+sudo systemctl restart munge
+
+#
+
+```
