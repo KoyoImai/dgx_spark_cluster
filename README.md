@@ -567,3 +567,15 @@ NodeName=node18 NodeAddr=10.0.0.18 CPUs=20 RealMemory=119543 Sockets=2 CoresPerS
 PartitionName=pair1 Nodes=node15,node16 MaxNodes=2 Default=YES MaxTime=INFINITE State=UP
 PartitionName=pair2 Nodes=node17,node18 MaxNodes=2 MaxTime=INFINITE State=UP
 ```
+管理者nodeで作成した`slurm.conf`を全ての計算用nodeに配布してください。
+```
+sudo scp /usr/local/etc/slurm.conf mprg@node15:/tmp/slurm.conf
+sudo scp /usr/local/etc/slurm.conf mprg@node16:/tmp/slurm.conf
+sudo scp /usr/local/etc/slurm.conf mprg@node17:/tmp/slurm.conf
+sudo scp /usr/local/etc/slurm.conf mprg@node18:/tmp/slurm.conf
+```
+管理者nodeから各計算用nodeに`slurm.conf`をコピーしたら、配置場所を修正してください。
+```
+sudo mv /tmp/slurm.conf /usr/local/etc/slurm.conf
+
+```
