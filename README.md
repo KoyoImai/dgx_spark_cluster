@@ -3,7 +3,7 @@
 ## 前準備
 ・DGX Spark5台（管理者node用1台，計算用node4台） \
 ・RJ45 Ethernet スイッチ（8ポート） \
-・QSFPケーブル2本 \
+・QSFPケーブル2本 \https://slurm.schedmd.com/configurator.html
 ・LANケーブル6本 \
 ・[USB-Cハブ](https://www.ankerjapan.com/products/a8352?srsltid=AfmBOoq95ZKB998T5GecohoCODQpk4HWPhwSNI8mhbB-wakpWkvt89U1)（管理者nodeのRJ45増設用）
 
@@ -464,8 +464,8 @@ sudo systemctl enable munge
 ```
 
 ## ステップ4 : Slurmの構築
-**[参考1:Slurmの構築(1)](https://qiita.com/kccs_takahiro-kawamura/items/bb0ffe731030aec3e4f5)**
-**[参考2:Slurmの構築(2)](https://slurm.schedmd.com/configurator.easy.html)**
+**[参考1:Slurmの構築(1)](https://qiita.com/kccs_takahiro-kawamura/items/bb0ffe731030aec3e4f5)** \
+**[参考2:Slurmの構築(2)](https://slurm.schedmd.com/configurator.easy.html)** \
 **[参考3:Slurmの構築(3)](https://slurm.schedmd.com/configurator.html)**
 
 参考2と参考3で`slurm.conf`を作成できます。
