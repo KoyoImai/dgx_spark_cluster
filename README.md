@@ -467,6 +467,8 @@ sudo systemctl enable munge
 **[参考1:Slurmの構築(1)](https://qiita.com/kccs_takahiro-kawamura/items/bb0ffe731030aec3e4f5)**
 
 複数の計算nodeを1つのクラスタとしてまとめて管理し、ユーザーのjob投入に対して適切な計算資源を自動で割り当てるためにSlurmを導入します。
+
+### Slurmのビルドとインストール
 まず、全てのnodeで必要なパッケージをインストールします。
 以下のコマンドを実行してください。
 ```
@@ -482,7 +484,7 @@ wget https://download.schedmd.com/slurm/slurm-24.11.3.tar.bz2
 tar -jxvf slurm-24.11.3.tar.bz2
 ```
 上記コマンド実行後、`slurm-24.11.3`ディレクトリができるので、以降はそこで作業します。
-Slurmのビルドとインストールをするため、全てのnodeで以下のコマンドを実行してください。
+Slurmのビルドとインストールをするため、まず管理者nodeで以下のコマンドを実行してください。
 ```
 cd ~/slurm-24.11.3/
 export HAVEMYSQLCONFIG=/usr/bin/mysql_config
@@ -490,3 +492,12 @@ export HAVEMYSQLCONFIG=/usr/bin/mysql_config
 make
 sudo make install
 ```
+続いて、計算用nodeで以下のコマンドを実行してください。
+```
+cd ~/slurm-24.11.3/
+./configure
+make
+sudo make install
+```
+
+### 計算用nodeのスペック確認
