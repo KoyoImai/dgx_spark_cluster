@@ -503,4 +503,7 @@ make
 sudo make install
 ```
 
-### 計算用nodeのスペック確認
+### slurm.confの生成
+まず、管理者nodeで`/usr/local/etc/slurm.conf`を作成します。
+`slurm.conf`は、`/usr/local/etc/slurm.conf/configurator.easy.html`を作成して生成可能です。
+
