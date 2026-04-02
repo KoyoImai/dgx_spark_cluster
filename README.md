@@ -575,7 +575,26 @@ sudo scp /usr/local/etc/slurm.conf mprg@node17:/tmp/slurm.conf
 sudo scp /usr/local/etc/slurm.conf mprg@node18:/tmp/slurm.conf
 ```
 管理者nodeから各計算用nodeに`slurm.conf`をコピーしたら、配置場所を修正してください。
+以下のコマンドを計算用node全てで実行してください。
 ```
 sudo mv /tmp/slurm.conf /usr/local/etc/slurm.conf
-
 ```
+
+### Slurmユーザーの作成
+slurmユーザーを作成します。
+まず、管理者nodeで以下のコマンドを実行します。
+パスワードは、`Ki**************`です。
+```
+sudo adduser slurm --uid 1099
+sudo gpasswd -a slurm sudo
+sudo usermod -aG syslog slurm
+```
+続いて、全ての計算用nodeで以下のコマンドを実行してください。
+```
+sudo useradd -u 1099 -d /nonexistent -s /usr/sbin/nologin -M slurm
+sudo gpasswd -a slurm sudo
+sudo usermod -aG syslog slurm
+```
+
+### gres.confの作成
+
