@@ -466,7 +466,7 @@ sudo systemctl enable munge
 ## ステップ4 : Slurmの構築
 **[参考1:Slurmの構築(1)](https://qiita.com/kccs_takahiro-kawamura/items/bb0ffe731030aec3e4f5)**
 **[参考2:Slurmの構築(2)](https://slurm.schedmd.com/configurator.easy.html)**
-**[参考3:Slurmの構築(3)]([https://slurm.schedmd.com/configurator.easy.html](https://slurm.schedmd.com/configurator.html)**
+**[参考3:Slurmの構築(3)](https://slurm.schedmd.com/configurator.html)**
 
 参考2と参考3で`slurm.conf`を作成できます。
 複数の計算nodeを1つのクラスタとしてまとめて管理し、ユーザーのjob投入に対して適切な計算資源を自動で割り当てるためにSlurmを導入します。
