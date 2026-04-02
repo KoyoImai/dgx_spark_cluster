@@ -3,7 +3,7 @@
 ## 前準備
 ・DGX Spark5台（管理者node用1台，計算用node4台） \
 ・RJ45 Ethernet スイッチ（8ポート） \
-・QSFPケーブル2本 \https://slurm.schedmd.com/configurator.html
+・QSFPケーブル2本 \
 ・LANケーブル6本 \
 ・[USB-Cハブ](https://www.ankerjapan.com/products/a8352?srsltid=AfmBOoq95ZKB998T5GecohoCODQpk4HWPhwSNI8mhbB-wakpWkvt89U1)（管理者nodeのRJ45増設用）
 
