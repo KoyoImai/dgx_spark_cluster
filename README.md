@@ -475,3 +475,18 @@ sudo apt install build-essential cmake mailutils libmysqlclient-dev lua5.4 liblu
 上記のコマンドを実行すると、mail server configurationについて聞かれます。
 「No configuration（設定なし）」を選択します。
 
+続いて、Slurmソースをダウンロードするため、以下のコマンドを全てのnodeで順番に実行してください。
+```
+cd  ~
+wget https://download.schedmd.com/slurm/slurm-24.11.3.tar.bz2
+tar -jxvf slurm-24.11.3.tar.bz2
+```
+上記コマンド実行後、`slurm-24.11.3`ディレクトリができるので、以降はそこで作業します。
+Slurmのビルドとインストールをするため、全てのnodeで以下のコマンドを実行してください。
+```
+cd ~/slurm-24.11.3/
+export HAVEMYSQLCONFIG=/usr/bin/mysql_config
+./configure --with-lua
+make
+sudo make install
+```
