@@ -1146,3 +1146,56 @@ mpirun -np 2 -H 10.0.2.1:1,10.0.2.2:1 \
   $HOME/nccl-tests/build/all_gather_perf -b 16G -e 16G -f 2
 ```
 以上でQSFP接続とNCCL設定については終了です。
+
+
+
+## ステップ9:DGX Spartkを4台使用可能に設定（w/o QSFP）
+QSFP接続ではなく、Ethernet経由で4台同時に使用できるように設定を変更します。
+そのために、`/usr/local/etc/slurm.conf`の設定を修正します。
+管理者nodeで以下の内容を`/usr/local/etc/slurm.conf`に追加してください。
+```
+PartitionName=pair1 Nodes=node15,node16 MaxNodes=2 Default=YES MaxTime=INFINITE State=UP
+PartitionName=pair2 Nodes=node17,node18 MaxNodes=2 MaxTime=INFINITE State=UP
+PartitionName=all Nodes=node15,node16,node17,node18 MaxNodes=4 MaxTime=INFINITE State=UP
+```
+管理者nodeで`slurm.conf`の修正が完了したら、それを計算nodeに配布します。
+以下のコマンドを管理者nodeで実行してください。
+```
+# 全計算ノードに配布（mgmtで実行）
+for node in node15 node16 node17 node18; do
+  sudo scp /usr/local/etc/slurm.conf mprg@${node}:/tmp/slurm.conf
+done
+```
+各計算nodeに配布したら、計算node側で以下を実行してください。
+```
+sudo mv /tmp/slurm.conf /usr/local/etc/slurm.conf
+```
+管理者nodeで以下を実行して`slurmctld`を再起動してください。
+```
+sudo systemctl restart slurmctld
+sinfo
+```
+全ての計算nodeで以下を実行してください。
+```
+sudo systemctl restart slurmd
+```
+管理者nodeで状態を確認してください。
+```
+mprg@spark-3894:~/singularity$ sinfo
+PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
+pair1*       up   infinite      2   idle node[15-16]
+pair2        up   infinite      2   idle node[17-18]
+all          up   infinite      4   idle node[15-18]
+mprg@spark-3894:~/singularity$ 
+```
+各partitionがidle状態になっているので成功していることがわかります。
+4台全てを使用するjobを投入して確認します。
+```
+# 4台全てでhostnameを実行
+mprg@spark-3894:~/singularity$ srun --partition=all --nodes=4 hostname
+spark-fb97
+spark-4440
+spark-07a2
+spark-755c
+mprg@spark-3894:~/singularity$
+```
