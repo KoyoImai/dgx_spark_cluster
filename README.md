@@ -740,3 +740,23 @@ sudo passwd kouyou
 id kouyou
 ls /home4cluster/
 ```
+
+## ステップ7:Singularityの導入
+MPRGクラスターと同様にSingularityを導入します。
+まず、管理者nodeで以下のコマンドを実行して、必要なパッケージをインストールしてください。
+```
+sudo apt-get update
+sudo apt-get install -y autoconf automake cryptsetup fuse2fs git fuse \
+  libfuse-dev libseccomp-dev libtool pkg-config runc squashfs-tools \
+  squashfs-tools-ng uidmap wget zlib1g-dev libsubid-dev
+```
+続いて、`conmon`をインストールします。
+以下のコマンドを実行してください。
+```
+sudo apt-get install -y conmon
+```
+次に、`Go`をインストールします。
+以下のコマンドを実行します。
+```
+
+```
