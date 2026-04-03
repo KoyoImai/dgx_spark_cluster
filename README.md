@@ -652,3 +652,27 @@ sudo systemctl status slurmctld
 状態確認で`Active: active (running)`が出ていれば問題ないです。
 （注意：最初の`slurm.conf`だとnode名が違ったため、修正しました。途中エラーが出まくって色々いじったので、もしかしたら、上記のコマンドでエラーが出るかもしれないです。）
 
+続いて、計算用nodeでもSlurm Daemonの起動と登録を行います。
+（注意：エラー解決で色々いじったので、記入漏れがあるかもしれないです。）
+```
+# cgroup.confの作成
+sudo bash -c 'cat > /usr/local/etc/cgroup.conf << EOF
+CgroupPlugin=autodetect
+EOF'
+
+cd ~/slurm-24.11.3/etc/
+sudo cp slurmd.service /etc/systemd/system/
+sudo systemctl daemon-reload
+
+sudo systemctl enable slurmd
+sudo systemctl start slurmd
+sudo systemctl status slurmd
+```
+管理者nodeで以下を実行して結果を確認してください。
+```
+mprg@spark-3894:~/slurm-24.11.3$ sinfo
+PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
+pair1*       up   infinite      2   idle node[15-16]
+pair2        up   infinite      2   idle node[17-18]
+mprg@spark-3894:~/slurm-24.11.3$ 
+```
