@@ -675,5 +675,39 @@ mprg@spark-3894:~/slurm-24.11.3$ sinfo
 PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
 pair1*       up   infinite      2   idle node[15-16]
 pair2        up   infinite      2   idle node[17-18]
+mprg@spark-3894:~/slurm-24.11.3$
+
+mprg@spark-3894:~/slurm-24.11.3$ srun --partition=pair1 --nodes=1 hostname
+spark-fb97
+mprg@spark-3894:~/slurm-24.11.3$ srun --partition=pair1 --nodes=2 hostname
+spark-4440
+spark-fb97
+mprg@spark-3894:~/slurm-24.11.3$ srun --partition=pair1 --nodes=1 --gres=gpu:1 nvidia-smi
+Fri Apr  3 14:11:57 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GB10                    On  |   0000000F:01:00.0 Off |                  N/A |
+| N/A   35C    P8              4W /  N/A  | Not Supported          |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A            3338      G   /usr/lib/xorg/Xorg                      133MiB |
+|    0   N/A  N/A            3491      G   /usr/bin/gnome-shell                     93MiB |
+|    0   N/A  N/A            4415      G   .../7965/usr/lib/firefox/firefox        674MiB |
+|    0   N/A  N/A            9715      G   /usr/bin/gnome-control-center            37MiB |
++-----------------------------------------------------------------------------------------+
+mprg@spark-3894:~/slurm-24.11.3$ srun --partition=pair2 --nodes=1 hostname
+spark-755c
 mprg@spark-3894:~/slurm-24.11.3$ 
+
 ```
