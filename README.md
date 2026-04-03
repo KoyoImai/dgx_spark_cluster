@@ -867,3 +867,84 @@ sudo systemctl reload apparmor
 ```
 singularity --version
 ```
+
+## ステップ8:DGX Sparkの2台接続
+**[参考1:DGX Sparkの2台接続](https://build.nvidia.com/spark/connect-two-sparks/stacked-sparks)**
+
+1jobを最大2nodeで動かせるように、DGX Spark2台をQSFPケーブルで接続し、動作可能な状態にします。
+まず、QSFPケーブルで2台のDGX Sparkを接続してください。
+ここでは、`node15`と`node16`を接続して作業を勧めていきます。
+
+QSFPケーブルで2台のDGX Sparkを接続したら、ネットワークインターフェースの設定を行います。
+NVIDIA公式に従って、自動IP割り当てで設定します。
+まず、2台が接続できているかを、以下のコマンドで確認してください。
+```
+mprg@spark-fb97:~/singularity$ ibdev2netdev
+roceP2p1s0f0 port 1 ==> enP2p1s0f0np0 (Up)
+roceP2p1s0f1 port 1 ==> enP2p1s0f1np1 (Down)
+rocep1s0f0 port 1 ==> enp1s0f0np0 (Up)
+rocep1s0f1 port 1 ==> enp1s0f1np1 (Down)
+```
+`enp1s0f0np0 (Up)`が`Up`となっているため、このインターフェースを使用します。
+以下のコマンドを、node15とnode16の両方で実行してください。
+```
+sudo tee /etc/netplan/40-cx7.yaml > /dev/null <<EOF
+network:
+  version: 2
+  ethernets:
+    enp1s0f0np0:
+      link-local: [ ipv4 ]
+    enp1s0f1np1:
+      link-local: [ ipv4 ]
+EOF
+sudo chmod 600 /etc/netplan/40-cx7.yaml
+sudo netplan apply
+```
+node15とnode16でIPアドレスを確認します。
+```
+# node15
+mprg@spark-fb97:~/singularity$ ip addr show enp1s0f0np0
+3: enp1s0f0np0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether 4c:bb:47:2f:fb:98 brd ff:ff:ff:ff:ff:ff
+    inet 169.254.20.98/16 brd 169.254.255.255 scope link noprefixroute enp1s0f0np0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::4ebb:47ff:fe2f:fb98/64 scope link 
+       valid_lft forever preferred_lft forever
+
+# node16
+mprg@spark-4440:~/singularity$ ip addr show enp1s0f0np0
+3: enp1s0f0np0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether 4c:bb:47:2f:44:41 brd ff:ff:ff:ff:ff:ff
+    inet 169.254.201.68/16 brd 169.254.255.255 scope link noprefixroute enp1s0f0np0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::4ebb:47ff:fe2f:4441/64 scope link 
+       valid_lft forever preferred_lft forever
+```
+node15では`169.254.20.98`、node16では`169.254.201.68`が割り当てられているのが確認できます。
+一応、pingが通るかを確認します。
+```
+# node15
+mprg@spark-fb97:~/singularity$ ping -c 3 169.254.201.68
+PING 169.254.201.68 (169.254.201.68) 56(84) bytes of data.
+64 bytes from 169.254.201.68: icmp_seq=1 ttl=64 time=1.23 ms
+64 bytes from 169.254.201.68: icmp_seq=2 ttl=64 time=0.908 ms
+64 bytes from 169.254.201.68: icmp_seq=3 ttl=64 time=1.19 ms
+--- 169.254.201.68 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 0.908/1.108/1.226/0.142 ms
+mprg@spark-fb97:~/singularity$ 
+
+# node16
+mprg@spark-4440:~/singularity$ ping -c 3 169.254.20.98
+PING 169.254.20.98 (169.254.20.98) 56(84) bytes of data.
+64 bytes from 169.254.20.98: icmp_seq=1 ttl=64 time=0.849 ms
+64 bytes from 169.254.20.98: icmp_seq=2 ttl=64 time=1.06 ms
+64 bytes from 169.254.20.98: icmp_seq=3 ttl=64 time=0.724 ms
+
+--- 169.254.20.98 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2040ms
+rtt min/avg/max/mdev = 0.724/0.878/1.063/0.139 ms
+mprg@spark-4440:~/singularity$ 
+```
+node15とnode16の両方においてpingが通っていることが確認できます。
+
