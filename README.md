@@ -1077,3 +1077,34 @@ export MPI_HOME="/usr/lib/aarch64-linux-gnu/openmpi"
 export NCCL_HOME="$HOME/nccl/build/"
 export LD_LIBRARY_PATH="$NCCL_HOME/lib:$CUDA_HOME/lib64/:$MPI_HOME/lib:$LD_LIBRARY_PATH"
 ```
+NCCLのビルドが完了したら、テストします。
+以下のコマンドをnode15とnode16実行してください。
+```
+git clone https://github.com/NVIDIA/nccl-tests.git ~/nccl-tests/
+cd ~/nccl-tests/
+make MPI=1
+```
+以上は完了したら、実際にテスト行います。
+node15で以下のコマンドを実行してください。
+```
+export CUDA_HOME="/usr/local/cuda"
+export MPI_HOME="/usr/lib/aarch64-linux-gnu/openmpi"
+export NCCL_HOME="$HOME/nccl/build/"
+export LD_LIBRARY_PATH="$NCCL_HOME/lib:$CUDA_HOME/lib64/:$MPI_HOME/lib:$LD_LIBRARY_PATH"
+
+export UCX_NET_DEVICES=enp1s0f0np0
+export NCCL_SOCKET_IFNAME=enp1s0f0np0
+export OMPI_MCA_btl_tcp_if_include=enp1s0f0np0
+
+# all_gatherテスト（node15のIPとnode16のIPを指定）
+mpirun -np 2 -H 10.0.1.1:1,10.0.1.2:1 \
+  --mca plm_rsh_agent "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" \
+  -x LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
+  $HOME/nccl-tests/build/all_gather_perf
+
+# 16GBバッファでのテスト
+mpirun -np 2 -H 10.0.1.1:1,10.0.1.2:1 \
+  --mca plm_rsh_agent "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" \
+  -x LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
+  $HOME/nccl-tests/build/all_gather_perf -b 16G -e 16G -f 2
+```
