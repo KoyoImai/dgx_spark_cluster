@@ -742,6 +742,9 @@ ls /home4cluster/
 ```
 
 ## ステップ7:Singularityの導入
+**[参考1:Singularityの導入](https://note.com/holyday_mylife/n/n58cf55315d46)**
+**[参考2:Singularityの導入](https://gist.github.com/muripoLife/d21fe546d530f0e0474ad1b053b5b084)**
+
 MPRGクラスターと同様にSingularityを導入します。
 まず、管理者nodeで以下のコマンドを実行して、必要なパッケージをインストールしてください。
 ```
@@ -758,5 +761,87 @@ sudo apt-get install -y conmon
 次に、`Go`をインストールします。
 以下のコマンドを実行します。
 ```
+export VERSION=1.24.1 OS=linux ARCH=arm64
 
+wget -O /tmp/go${VERSION}.${OS}-${ARCH}.tar.gz \
+  https://dl.google.com/go/go${VERSION}.${OS}-${ARCH}.tar.gz
+
+sudo tar -C /usr/local -xzf /tmp/go${VERSION}.${OS}-${ARCH}.tar.gz
+
+# パスを設定
+echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee -a /etc/profile
+
+# 現在のセッションにも反映
+export PATH=$PATH:/usr/local/go/bin
+
+# 確認
+go version
+```
+最後に、Singularityのソースをクローン・ビルドします。
+以下のコマンドを実行してクローンしてください。
+```
+cd ~
+git clone --recurse-submodules https://github.com/sylabs/singularity.git
+cd singularity
+git submodule update --init
+git checkout --recurse-submodules v4.3.0
+```
+クローンが完了したら、ビルドします。
+以下のコマンドを実行してください。
+```
+./mconfig
+make -C builddir -j 30
+sudo make -C builddir install
+```
+Singulariotyのバージョン確認等を行います。
+以下のコマンドを実行してください。
+```
+singularity --version
+sudo tee /etc/apparmor.d/singularity-ce << 'EOF'
+# Permit unprivileged user namespace creation for SingularityCE starter
+abi <abi/4.0>,
+include <tunables/global>
+
+profile singularity-ce /usr/local/libexec/singularity/bin/starter{,-suid} flags=(unconfined) {
+  userns,
+
+  # Site-specific additions and overrides. See local/README for details.
+  include if exists <local/singularity-ce>
+}
+EOF
+sudo systemctl reload apparmor
+```
+ここまでで、管理者nodeでSingularityの導入が完了しました。
+
+ここからは、全ての計算用nodeでSingularityの導入を行っていきます。
+基本的な手順は管理者nodeと同じです。
+以下のコマンドを実行して必要なパッケージをインストールしてください。
+```
+sudo apt-get update
+sudo apt-get install -y autoconf automake cryptsetup fuse2fs git fuse \
+  libfuse-dev libseccomp-dev libtool pkg-config runc squashfs-tools \
+  squashfs-tools-ng uidmap wget zlib1g-dev libsubid-dev conmon
+```
+必要なパッケージをインストールしたら、Goをインストールします。
+以下のコマンドを実行してください。
+```
+export VERSION=1.24.1 OS=linux ARCH=arm64
+wget -O /tmp/go${VERSION}.${OS}-${ARCH}.tar.gz \
+  https://dl.google.com/go/go${VERSION}.${OS}-${ARCH}.tar.gz
+sudo tar -C /usr/local -xzf /tmp/go${VERSION}.${OS}-${ARCH}.tar.gz
+echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee -a /etc/profile
+export PATH=$PATH:/usr/local/go/bin
+go version
+```
+Goのインストールが完了したら、Singularityのクローンとビルドをします。
+以下のコマンドを実行してください。
+```
+cd ~
+git clone --recurse-submodules https://github.com/sylabs/singularity.git
+cd singularity
+git submodule update --init
+git checkout --recurse-submodules v4.3.0
+./mconfig
+make -C builddir -j 30
+sudo make -C builddir install
 ```
