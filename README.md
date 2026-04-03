@@ -728,3 +728,15 @@ sudo systemctl restart ssh
 
 ## ステップ6:ユーザーの作成
 クラスタに接続してjobを投げるユーザーの作成などを行います。
+管理者nodeで以下のコマンドを実行し、ユーザーの登録をしてください。
+```
+# ホームディレクトリを /home4cluster/kouyou に指定してユーザー作成
+sudo useradd -m -d /home4cluster/kouyou -s /bin/bash kouyou
+
+# パスワードを設定
+sudo passwd kouyou
+
+# 確認
+id kouyou
+ls /home4cluster/
+```
