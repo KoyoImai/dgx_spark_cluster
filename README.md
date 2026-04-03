@@ -846,3 +846,24 @@ git checkout --recurse-submodules v4.3.0
 make -C builddir -j 30
 sudo make -C builddir install
 ```
+最後にAppArmorプロファイルの設定を行います。
+以下のコマンドを実行してください。
+```
+sudo tee /etc/apparmor.d/singularity-ce << 'EOF'
+# Permit unprivileged user namespace creation for SingularityCE starter
+abi <abi/4.0>,
+include <tunables/global>
+
+profile singularity-ce /usr/local/libexec/singularity/bin/starter{,-suid} flags=(unconfined) {
+  userns,
+
+  include if exists <local/singularity-ce>
+}
+EOF
+sudo systemctl reload apparmor
+```
+以上で、管理者nodeと計算用nodeにSingularityのインストールが完了しました。
+確認をする場合は以下で確認してください。
+```
+singularity --version
+```
