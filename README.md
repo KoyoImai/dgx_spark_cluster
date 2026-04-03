@@ -742,8 +742,9 @@ ls /home4cluster/
 ```
 
 ## ステップ7:Singularityの導入
-**[参考1:Singularityの導入](https://note.com/holyday_mylife/n/n58cf55315d46)**
-**[参考2:Singularityの導入](https://gist.github.com/muripoLife/d21fe546d530f0e0474ad1b053b5b084)**
+**[参考1:Singularityの導入](https://note.com/holyday_mylife/n/n58cf55315d46)** \
+**[参考2:Singularityの導入](https://gist.github.com/muripoLife/d21fe546d530f0e0474ad1b053b5b084)** \
+**[参考3:Singularityの導入](https://docs.sylabs.io/guides/3.0/user-guide/installation.html)**
 
 MPRGクラスターと同様にSingularityを導入します。
 まず、管理者nodeで以下のコマンドを実行して、必要なパッケージをインストールしてください。
