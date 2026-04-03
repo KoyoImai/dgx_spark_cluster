@@ -869,7 +869,7 @@ singularity --version
 ```
 
 ## ステップ8:DGX Sparkの2台接続
-**[参考1:DGX Sparkの2台接続](https://build.nvidia.com/spark/connect-two-sparks/stacked-sparks)**
+**[参考1:DGX Sparkの2台接続](https://build.nvidia.com/spark/connect-two-sparks/stacked-sparks)** \
 **[参考２:DGX Sparkの2台接続](https://dev.classmethod.jp/articles/dgx-spark-two-node-clustering/)**
 
 1jobを最大2nodeで動かせるように、DGX Spark2台をQSFPケーブルで接続し、動作可能な状態にします。
@@ -1021,3 +1021,59 @@ ip addr show enp1s0f0np0
 手動でIPアドレスを固定しました。
 一旦、QSFPケーブルで通信速度が向上しているかを確認します。
 node15とnode16で確認をするために、以下のコマンドを2つのnodeで実行してください。
+```
+sudo apt install -y iperf3
+```
+`iperf3`をインストールしたら、node16でのみ以下のコマンドを実行してください。
+```
+iperf3 -s
+```
+その後、node15で以下のコマンドを実行して速度を比較してください。
+```
+# Ethernet経由
+iperf3 -c 10.0.0.16 -t 10 -P 8
+
+# QSFP経由
+iperf3 -c 10.0.1.2 -t 10 -P 8
+```
+速度比較の結果を見ると、並列処理するとQSFP経由のほうが速度向上が早いことがわかると思います。
+
+ここからは、NCCLの設定を行っていきます。
+全てのnodeで以下を実行してください。
+```
+sudo bash -c 'cat >> /etc/hosts << EOF
+
+# QSFP high-speed network
+10.0.1.1   node15-qsfp
+10.0.1.2   node16-qsfp
+10.0.2.1   node17-qsfp
+10.0.2.2   node18-qsfp
+EOF'
+```
+その後、node15で以下のコマンドを実行してください。
+```
+# SSH鍵を生成（既にある場合はスキップ）
+ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
+
+# node16に公開鍵をコピー
+ssh-copy-id -i ~/.ssh/id_rsa.pub mprg@10.0.1.2
+
+# 確認
+ssh mprg@10.0.1.2 hostname
+```
+次に以下のコマンドをnode15とnode16の両方で実行してNCCLのビルドを行ってください。
+```
+# 依存パッケージのインストール
+sudo apt-get update && sudo apt-get install -y libopenmpi-dev
+
+# NCCLをクローン・ビルド
+git clone -b v2.28.9-1 https://github.com/NVIDIA/nccl.git ~/nccl/
+cd ~/nccl/
+make -j src.build NVCC_GENCODE="-gencode=arch=compute_121,code=sm_121"
+
+# 環境変数の設定
+export CUDA_HOME="/usr/local/cuda"
+export MPI_HOME="/usr/lib/aarch64-linux-gnu/openmpi"
+export NCCL_HOME="$HOME/nccl/build/"
+export LD_LIBRARY_PATH="$NCCL_HOME/lib:$CUDA_HOME/lib64/:$MPI_HOME/lib:$LD_LIBRARY_PATH"
+```
