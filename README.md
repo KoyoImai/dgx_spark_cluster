@@ -1108,3 +1108,40 @@ mpirun -np 2 -H 10.0.1.1:1,10.0.1.2:1 \
   -x LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
   $HOME/nccl-tests/build/all_gather_perf -b 16G -e 16G -f 2
 ```
+以上でnode15とnode16のテストは終了です。
+
+ここから、同様の手順でnode17とnode18も設定します。
+以下のコマンドを実行してください。
+```
+# node17
+ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
+ssh-copy-id -i ~/.ssh/id_rsa.pub mprg@10.0.0.18
+ssh mprg@10.0.0.18 hostname
+
+# node17 & node18
+sudo apt-get update && sudo apt-get install -y libopenmpi-dev
+git clone -b v2.28.9-1 https://github.com/NVIDIA/nccl.git ~/nccl/
+cd ~/nccl/
+make -j src.build NVCC_GENCODE="-gencode=arch=compute_121,code=sm_121"
+
+export CUDA_HOME="/usr/local/cuda"
+export MPI_HOME="/usr/lib/aarch64-linux-gnu/openmpi"
+export NCCL_HOME="$HOME/nccl/build/"
+export LD_LIBRARY_PATH="$NCCL_HOME/lib:$CUDA_HOME/lib64/:$MPI_HOME/lib:$LD_LIBRARY_PATH"
+
+% node17 & node18
+git clone https://github.com/NVIDIA/nccl-tests.git ~/nccl-tests/
+cd ~/nccl-tests/
+make MPI=1
+
+# node17
+export UCX_NET_DEVICES=enp1s0f0np0
+export NCCL_SOCKET_IFNAME=enp1s0f0np0
+export OMPI_MCA_btl_tcp_if_include=enp1s0f0np0
+
+mpirun -np 2 -H 10.0.2.1:1,10.0.2.2:1 \
+  --mca plm_rsh_agent "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" \
+  -x LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
+  $HOME/nccl-tests/build/all_gather_perf -b 16G -e 16G -f 2
+```
+以上でQSFP接続とNCCL設定については終了です。
