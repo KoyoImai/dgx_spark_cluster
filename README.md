@@ -559,10 +559,10 @@ SlurmdLogFile=/var/log/slurm/slurmd.log
 #
 #
 # COMPUTE NODES
-NodeName=node15 NodeAddr=10.0.0.15 CPUs=20 RealMemory=119543 Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 Gres=gpu:blackwell:1 State=UNKNOWN
-NodeName=node16 NodeAddr=10.0.0.16 CPUs=20 RealMemory=119543 Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 Gres=gpu:blackwell:1 State=UNKNOWN
-NodeName=node17 NodeAddr=10.0.0.17 CPUs=20 RealMemory=119543 Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 Gres=gpu:blackwell:1 State=UNKNOWN
-NodeName=node18 NodeAddr=10.0.0.18 CPUs=20 RealMemory=119543 Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 Gres=gpu:blackwell:1 State=UNKNOWN
+NodeName=node15 NodeHostname=spark-fb97 NodeAddr=10.0.0.15 CPUs=20 RealMemory=119543 Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 Gres=gpu:blackwell:1 State=UNKNOWN
+NodeName=node16 NodeHostname=spark-4440 NodeAddr=10.0.0.16 CPUs=20 RealMemory=119543 Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 Gres=gpu:blackwell:1 State=UNKNOWN
+NodeName=node17 NodeHostname=spark-755c NodeAddr=10.0.0.17 CPUs=20 RealMemory=119543 Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 Gres=gpu:blackwell:1 State=UNKNOWN
+NodeName=node18 NodeHostname=spark-07a2 NodeAddr=10.0.0.18 CPUs=20 RealMemory=119543 Sockets=2 CoresPerSocket=10 ThreadsPerCore=1 Gres=gpu:blackwell:1 State=UNKNOWN
 
 PartitionName=pair1 Nodes=node15,node16 MaxNodes=2 Default=YES MaxTime=INFINITE State=UP
 PartitionName=pair2 Nodes=node17,node18 MaxNodes=2 MaxTime=INFINITE State=UP
