@@ -597,5 +597,18 @@ sudo usermod -aG syslog slurm
 ```
 
 ### gres.confの作成
+**[参考1:gres.confの作成(1)](https://slurm.schedmd.com/gres.conf.html)**
+
 計算nodeで`gres.conf`を作成します。
+`gres.conf`を作成することで、どのnodeにどのGPUが載っているかを正確に認識することが可能になります。
+全ての計算nodeで以下の内容の`gres.conf`を作成してください。
+```
+mprg@spark-fb97:~/slurm-24.11.3$ cat /usr/local/etc/gres.conf 
+NodeName=node15 AutoDetect=off Name=gpu Type=blackwell File=/dev/nvidia0
+NodeName=node16 AutoDetect=off Name=gpu Type=blackwell File=/dev/nvidia0
+NodeName=node17 AutoDetect=off Name=gpu Type=blackwell File=/dev/nvidia0
+NodeName=node18 AutoDetect=off Name=gpu Type=blackwell File=/dev/nvidia0
+
+mprg@spark-fb97:~/slurm-24.11.3$ 
+```
 
