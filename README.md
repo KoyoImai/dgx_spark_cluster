@@ -711,3 +711,20 @@ spark-755c
 mprg@spark-3894:~/slurm-24.11.3$ 
 
 ```
+
+## ステップ5:SSH設定
+利用者が計算用nodeに直接アクセスできないように、SSH設定を行います。
+まず、管理者nodeで以下のコマンドを実行してください。
+```
+sudo systemctl enable ssh
+sudo systemctl start ssh
+```
+続いて、計算用nodeで以下のコマンドを実行してください。
+```
+echo "AllowUsers mprg" | sudo tee -a /etc/ssh/sshd_config
+tail -3 /etc/ssh/sshd_config
+sudo systemctl restart ssh
+```
+
+## ステップ6:ユーザーの作成
+クラスタに接続してjobを投げるユーザーの作成などを行います。
