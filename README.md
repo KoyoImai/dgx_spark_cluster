@@ -794,7 +794,7 @@ git checkout --recurse-submodules v4.3.0
 make -C builddir -j 30
 sudo make -C builddir install
 ```
-Singulariotyのバージョン確認等を行います。
+Singularityのバージョン確認等を行います。
 以下のコマンドを実行してください。
 ```
 singularity --version
@@ -1149,7 +1149,7 @@ mpirun -np 2 -H 10.0.2.1:1,10.0.2.2:1 \
 
 
 
-## ステップ9:DGX Spartkを4台使用可能に設定（w/o QSFP）
+## ステップ9:DGX Sparkを4台使用可能に設定（w/o QSFP）
 QSFP接続ではなく、Ethernet経由で4台同時に使用できるように設定を変更します。
 そのために、`/usr/local/etc/slurm.conf`の設定を修正します。
 管理者nodeで以下の内容を`/usr/local/etc/slurm.conf`に追加してください。
