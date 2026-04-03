@@ -1003,6 +1003,7 @@ sudo netplan apply
 ip addr show enp1s0f0np0
 ```
 ```
+# node18
 sudo tee /etc/netplan/40-cx7.yaml > /dev/null <<EOF
 network:
   version: 2
@@ -1056,7 +1057,7 @@ EOF'
 ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
 
 # node16に公開鍵をコピー
-ssh-copy-id -i ~/.ssh/id_rsa.pub mprg@10.0.1.2
+ssh-copy-id -i ~/.ssh/id_rsa.pub mprg@10.0.0.16
 
 # 確認
 ssh mprg@10.0.1.2 hostname
@@ -1129,7 +1130,7 @@ export MPI_HOME="/usr/lib/aarch64-linux-gnu/openmpi"
 export NCCL_HOME="$HOME/nccl/build/"
 export LD_LIBRARY_PATH="$NCCL_HOME/lib:$CUDA_HOME/lib64/:$MPI_HOME/lib:$LD_LIBRARY_PATH"
 
-% node17 & node18
+# node17 & node18
 git clone https://github.com/NVIDIA/nccl-tests.git ~/nccl-tests/
 cd ~/nccl-tests/
 make MPI=1
