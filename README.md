@@ -157,6 +157,7 @@ sudo bash -c 'cat >> /etc/hosts << EOF
 10.0.0.16   node16
 10.0.0.17   node17
 10.0.0.18   node18
+10.0.0.8    spark-3894
 EOF'
 ```
 `/etc/hosts`の内容を追加したら、pingが通るかを確認してください。
