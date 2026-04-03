@@ -597,4 +597,5 @@ sudo usermod -aG syslog slurm
 ```
 
 ### gres.confの作成
+計算nodeで`gres.conf`を作成します。
 
