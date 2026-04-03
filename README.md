@@ -612,3 +612,26 @@ NodeName=node18 AutoDetect=off Name=gpu Type=blackwell File=/dev/nvidia0
 mprg@spark-fb97:~/slurm-24.11.3$ 
 ```
 
+### 必要なディレクトリの作成と権限付与
+全てのnodeで以下のコマンドを実行してディレクトリの作成などを行ってください。
+これによって、Slurm Daemonが起動時に必要とする保存先・作業領域・ログ出力先をあらかじめ用意し、必要な権限を付与しておけます。
+```
+sudo mkdir -p /var/spool/slurmd
+sudo mkdir -p /var/spool/slurmctld
+sudo mkdir -p /var/log/slurm
+sudo chown -R slurm:slurm /var/spool/slurmd
+sudo chown -R slurm:slurm /var/spool/slurmctld
+sudo chown -R slurm:slurm /var/log/slurm
+sudo chown slurm:slurm /usr/local/etc/slurm.conf
+sudo chmod 644 /usr/local/etc/slurm.conf
+```
+
+### Slurm Daemonの登録・起動
+Slurm Daemonの登録と起動を行います。
+Daemonとは、Kinux系OSにおいて、バックグラウンドに常駐し、ネットワークサービスやシステム管理などの特定タスクを自動で処理するプログラムです。
+ですので、Slurm Daemonを登録・起動することで、Slurmの機能を常時バックグラウンドで動かしておけます。
+Slurmには`slurmd`、`slurmctld`、`slurmbd`の3種類のDaemonがあります。
+```
+slurmctld : Slurmの中央管理を行うDaemonです。他のSlurm Daemonや資源を監視し、jobの受付や資源の割当を行う。
+slurmd : 計算node上で動くDaemonです。
+```
