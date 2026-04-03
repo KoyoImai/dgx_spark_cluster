@@ -870,6 +870,7 @@ singularity --version
 
 ## ステップ8:DGX Sparkの2台接続
 **[参考1:DGX Sparkの2台接続](https://build.nvidia.com/spark/connect-two-sparks/stacked-sparks)**
+**[参考２:DGX Sparkの2台接続](https://dev.classmethod.jp/articles/dgx-spark-two-node-clustering/)**
 
 1jobを最大2nodeで動かせるように、DGX Spark2台をQSFPケーブルで接続し、動作可能な状態にします。
 まず、QSFPケーブルで2台のDGX Sparkを接続してください。
@@ -948,3 +949,75 @@ mprg@spark-4440:~/singularity$
 ```
 node15とnode16の両方においてpingが通っていることが確認できます。
 
+ここまでで、IPアドレスの固定をしたが、再起動時にIPアドレスがリセットされる恐れがあるので、手動設定に切り替える。
+全ての計算nodeで以下のコマンドを実行してください。
+```
+# node15
+sudo tee /etc/netplan/40-cx7.yaml > /dev/null <<EOF
+network:
+  version: 2
+  ethernets:
+    enp1s0f0np0:
+      addresses:
+        - 10.0.1.1/24
+      dhcp4: no
+EOF
+
+sudo chmod 600 /etc/netplan/40-cx7.yaml
+sudo netplan apply
+
+ip addr show enp1s0f0np0
+```
+```
+# node16
+sudo tee /etc/netplan/40-cx7.yaml > /dev/null <<EOF
+network:
+  version: 2
+  ethernets:
+    enp1s0f0np0:
+      addresses:
+        - 10.0.1.2/24
+      dhcp4: no
+EOF
+
+sudo chmod 600 /etc/netplan/40-cx7.yaml
+sudo netplan apply
+
+ip addr show enp1s0f0np0
+```
+```
+# node17
+sudo tee /etc/netplan/40-cx7.yaml > /dev/null <<EOF
+network:
+  version: 2
+  ethernets:
+    enp1s0f0np0:
+      addresses:
+        - 10.0.2.1/24
+      dhcp4: no
+EOF
+
+sudo chmod 600 /etc/netplan/40-cx7.yaml
+sudo netplan apply
+
+ip addr show enp1s0f0np0
+```
+```
+sudo tee /etc/netplan/40-cx7.yaml > /dev/null <<EOF
+network:
+  version: 2
+  ethernets:
+    enp1s0f0np0:
+      addresses:
+        - 10.0.2.2/24
+      dhcp4: no
+EOF
+
+sudo chmod 600 /etc/netplan/40-cx7.yaml
+sudo netplan apply
+
+ip addr show enp1s0f0np0
+```
+手動でIPアドレスを固定しました。
+一旦、QSFPケーブルで通信速度が向上しているかを確認します。
+node15とnode16で確認をするために、以下のコマンドを2つのnodeで実行してください。
