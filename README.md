@@ -740,6 +740,12 @@ sudo passwd kouyou
 id kouyou
 ls /home4cluster/
 ```
+`id kouyou`で`uid`を確認したら、その`uid`を使って計算nodeでユーザーを追加します。
+全ての計算nodeで以下のコマンドを実行してください。
+```
+sudo useradd -u 1100 -d /home4cluster/kouyou -s /bin/bash -M kouyou
+
+```
 
 ## ステップ7:Singularityの導入
 **[参考1:Singularityの導入](https://note.com/holyday_mylife/n/n58cf55315d46)** \
