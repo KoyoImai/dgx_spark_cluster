@@ -8,6 +8,14 @@
 cd /home4cluster/
 sudo mkdir containers
 cd containers/
+sudo chmod 777 /home4cluster/containers
 singularity pull docker://ghcr.io/ggml-org/llama.cpp:full-cuda
 ```
+node15でSlurn jobとして実行して確認します。
+```
+srun --partition=pair1 --nodes=1 --gres=gpu:1 \
+  singularity exec --nv /home4cluster/containers/llama.cpp_full-cuda.sif \
+  nvidia-smi
+```
+
 
