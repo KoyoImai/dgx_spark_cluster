@@ -3,7 +3,22 @@
 
 ## ステップ1：Singularity環境の用意
 ここでは、クラスタ上で大規模言語モデルを動かすための環境を用意します。
-まず、4台のDGX Sparkで同時にGPUが使用可能かを確かめます。
+
+まず、管理者nodeで以下のコマンドを実行してください。
+```
+cd /home4cluster/
+sudo mkdir containers
+cd containers/
+sudo chmod 777 /home4cluster/containers
+singularity pull docker://ghcr.io/ggml-org/llama.cpp:full-cuda
+```
+node15でSlurn jobとして実行して確認します。
+```
+srun --partition=pair1 --nodes=1 --gres=gpu:1 \
+  singularity exec --nv /home4cluster/containers/llama.cpp_full-cuda.sif \
+  nvidia-smi
+```
+また、4台のDGX Sparkで同時にGPUが使用可能かを確かめます。
 以下のコマンドを実行して結果を確認してください。
 ```
 mprg@spark-3894:/home4cluster/containers$ srun --partition=all --nodes=4 --gres=gpu:1 \
@@ -120,19 +135,15 @@ Sat Apr  4 09:08:10 2026
 mprg@spark-3894:/home4cluster/containers$ 
 ```
 
-まず、管理者nodeで以下のコマンドを実行してください。
+## ステップ2：学習済み大規模言語モデルの用意
+huggingfaceから学習済みパラメータをダウンロードしてきます。
+以下のコマンドを実行してください。
 ```
-cd /home4cluster/
-sudo mkdir containers
-cd containers/
-sudo chmod 777 /home4cluster/containers
-singularity pull docker://ghcr.io/ggml-org/llama.cpp:full-cuda
-```
-node15でSlurn jobとして実行して確認します。
-```
-srun --partition=pair1 --nodes=1 --gres=gpu:1 \
-  singularity exec --nv /home4cluster/containers/llama.cpp_full-cuda.sif \
-  nvidia-smi
-```
+cd /home4cluster/models
 
+# ファイル1（49.9GB）
+wget "https://huggingface.co/unsloth/Qwen3-235B-A22B-GGUF/resolve/main/Q2_K/Qwen3-235B-A22B-Q2_K-00001-of-00002.gguf"
 
+# ファイル2（35.8GB）
+wget "https://huggingface.co/unsloth/Qwen3-235B-A22B-GGUF/resolve/main/Q2_K/Qwen3-235B-A22B-Q2_K-00002-of-00002.gguf"
+```
