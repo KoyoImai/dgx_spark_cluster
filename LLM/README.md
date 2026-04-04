@@ -1,5 +1,15 @@
 # DGX Spark4台を使用した言語モデルの利用
 構築したDGX Spark4台の環境を使って大規模言語モデルを動かします。
+使用するDGX Sparkの台数、QSFP、RJ45の差によって推論速度などにどのような影響が出るかを確かめます。
+検証パターンをいかにまとめます。
+
+| パターン | partition | node数 | NW | 備考 |
+|---|---|---:|---|---|
+| 1台 | pair1 | 1 | - | node15固定 |
+| 2台（QSFP） | pair1 | 2 | QSFP 200Gbps | node15↔16 |
+| 2台（QSFP） | pair2 | 2 | QSFP 200Gbps | node17↔18 |
+| 2台（RJ45） | all | 2 | RJ45 1Gbps | node15↔16（同構成でNW変更） |
+| 4台（RJ45） | all | 4 | RJ45 1Gbps | node15〜18 |
 
 ## ステップ1：Singularity環境の用意
 ここでは、クラスタ上で大規模言語モデルを動かすための環境を用意します。
