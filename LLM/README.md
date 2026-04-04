@@ -162,4 +162,85 @@ wget "https://huggingface.co/unsloth/Qwen3-235B-A22B-GGUF/resolve/main/Q2_K/Qwen
 
 
 ## ステップ3 : 大規模言語モデルで推論を実行
+以下のコマンドを実行して、推論可能かを確かめてください。
+1nodeだけの確認実行です。
+```
+srun --partition=pair1 --nodes=1 --nodelist=node15 --gres=gpu:1 \
+  singularity exec --nv \
+  --env LD_LIBRARY_PATH=/app \
+  /home4cluster/containers/llama.cpp_full-cuda.sif \
+  /app/llama-completion \
+  --model /home4cluster/models/Qwen3-235B-A22B-Q2_K-00001-of-00002.gguf \
+  --n-gpu-layers 99 \
+  --ctx-size 4096 \
+  --temp 0.6 \
+  --top-p 0.95 \
+  --top-k 20 \
+  --seed 3407 \
+  --no-conversation \
+  --prompt "日本語で自己紹介してください。" \
+  -n 256
+```
 
+## ステップ4 : クラスタ環境の整備（一旦不要）
+**[参考1:llama.cpp(1)](https://zenn.dev/onpremdev/articles/3d77c91717d61e)**
+
+全ての実行を管理者nodeから行えるようにクラスタ環境を整備します。
+まず、管理者nodeでSSH鍵を生成し、それを全計算nodeにコピーします。
+以下のコマンドを実行してください。
+```
+# mgmtで実行
+ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
+
+# 全計算ノードに公開鍵をコピー
+ssh-copy-id mprg@node15
+ssh-copy-id mprg@node16
+ssh-copy-id mprg@node17
+ssh-copy-id mprg@node18
+```
+
+## ステップ5 : スクリプトの作成と実行
+**[参考1:llama.cpp(1)](https://zenn.dev/onpremdev/articles/3d77c91717d61e)**
+
+### 1nodeで実行
+まず、1nodeでの実行を行います。
+以下のコマンドでスクリプトを作成してください。
+```
+cat > /home4cluster/scripts/run_1node.sh << 'EOF'
+#!/bin/bash
+# 1台推論テスト（node15）
+
+SIF=/home4cluster/containers/llama.cpp_full-cuda.sif
+MODEL=/home4cluster/models/Qwen3-235B-A22B-Q2_K-00001-of-00002.gguf
+LOG=/home4cluster/logs/1node_$(date +%Y%m%d_%H%M%S).log
+
+echo "=== 1台推論テスト (node15) ===" | tee $LOG
+echo "開始: $(date)" | tee -a $LOG
+
+singularity exec --nv --env LD_LIBRARY_PATH=/app $SIF \
+  /app/llama-bench \
+  --model $MODEL \
+  --n-gpu-layers 99 \
+  -p 128 -n 256 -r 3 2>&1 | tee -a $LOG
+
+echo "終了: $(date)" | tee -a $LOG
+EOF
+```
+スクリプトを作成したら実行してください。
+```
+mprg@spark-3894:/home4cluster$ bash /home4cluster/scripts/run_1node.sh
+=== 1台推論テスト (node15) ===
+開始: Sat Apr  4 03:20:44 PM JST 2026
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 122572 MiB):
+  Device 0: NVIDIA GB10, compute capability 12.1, VMM: yes, VRAM: 122572 MiB
+load_backend: loaded CUDA backend from /app/libggml-cuda.so
+load_backend: loaded CPU backend from /app/libggml-cpu-armv8.6_2.so
+| model                          |       size |     params | backend    | ngl |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | --------------: | -------------------: |
+| qwen3moe 235B.A22B Q2_K - Medium |  79.80 GiB |   235.09 B | CUDA       |  99 |           pp128 |        134.11 ± 7.43 |
+| qwen3moe 235B.A22B Q2_K - Medium |  79.80 GiB |   235.09 B | CUDA       |  99 |           tg256 |         17.54 ± 0.08 |
+
+build: f49e91787 (8643)
+終了: Sat Apr  4 03:27:49 PM JST 2026
+mprg@spark-3894:/home4cluster$
+```
