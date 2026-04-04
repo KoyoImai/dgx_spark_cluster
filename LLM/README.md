@@ -159,3 +159,7 @@ wget "https://huggingface.co/unsloth/Qwen3-235B-A22B-GGUF/resolve/main/Q2_K/Qwen
 # ファイル2（35.8GB）
 wget "https://huggingface.co/unsloth/Qwen3-235B-A22B-GGUF/resolve/main/Q2_K/Qwen3-235B-A22B-Q2_K-00002-of-00002.gguf"
 ```
+
+
+## ステップ3 : 大規模言語モデルで推論を実行
+
