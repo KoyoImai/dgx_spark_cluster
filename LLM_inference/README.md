@@ -218,3 +218,60 @@ build: 25eec6f32 (8672)
 RPCサーバーを終了...
 終了: Mon Apr  6 06:26:10 PM JST 2026
 ```
+
+## ステップ3 : 2台推論（RJ45）
+```
+cat > /home4cluster/scripts/run_2node_rj45_1g.sh << 'EOF'
+#!/bin/bash
+# 2台推論テスト RJ45 1G (node15↔node16)
+# 管理者nodeから実行
+
+SIF=/home4cluster/containers/llama-rpc.sif
+MODEL=/home4cluster/models/Qwen3-235B-A22B-Q2_K-00001-of-00002.gguf
+LOG=/home4cluster/logs/2node_rj45_1g_$(date +%Y%m%d_%H%M%S).log
+RPC_PORT=50052
+NODE_MAIN=node15
+NODE_WORKER=node16
+WORKER_RJ45_IP=10.0.0.16  # node16 の RJ45 IP
+
+echo "=== 2台推論テスト RJ45 1G (node15↔node16) ===" | tee $LOG
+echo "開始: $(date)" | tee -a $LOG
+
+# node16 で RPC サーバーを起動（RJ45 IP でリッスン）
+echo "RPCサーバー起動中（node16: ${WORKER_RJ45_IP}:${RPC_PORT}）..." | tee -a $LOG
+ssh mprg@${NODE_WORKER} \
+  "singularity exec --nv \
+  --bind /usr/local/cuda:/usr/local/cuda \
+  --bind /home4cluster:/home4cluster \
+  --env LD_LIBRARY_PATH=/app:/usr/local/cuda/lib64 \
+  ${SIF} \
+  /app/rpc-server --host ${WORKER_RJ45_IP} --port ${RPC_PORT}" &
+SSH_PID=$!
+
+sleep 15
+
+# node15 から RJ45 経由で推論実行
+echo "推論開始（node15 → node16 RJ45 1G）..." | tee -a $LOG
+ssh mprg@${NODE_MAIN} \
+  "singularity exec --nv \
+  --bind /usr/local/cuda:/usr/local/cuda \
+  --bind /home4cluster:/home4cluster \
+  --env LD_LIBRARY_PATH=/app:/usr/local/cuda/lib64 \
+  ${SIF} \
+  /app/llama-bench \
+  --model ${MODEL} \
+  --n-gpu-layers 99 \
+  --rpc ${WORKER_RJ45_IP}:${RPC_PORT} \
+  -p 128 -n 256 -r 3" 2>&1 | tee -a $LOG
+
+# 後片付け
+echo "RPCサーバーを終了..." | tee -a $LOG
+ssh mprg@${NODE_WORKER} "pkill -f rpc-server" 2>/dev/null
+wait $SSH_PID 2>/dev/null
+echo "終了: $(date)" | tee -a $LOG
+EOF
+chmod +x /home4cluster/scripts/run_2node_rj45_1g.sh
+```
+```
+bash /home4cluster/scripts/run_2node_rj45_1g.sh
+```
