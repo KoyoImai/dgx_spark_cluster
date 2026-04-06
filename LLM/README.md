@@ -244,3 +244,74 @@ build: f49e91787 (8643)
 終了: Sat Apr  4 03:27:49 PM JST 2026
 mprg@spark-3894:/home4cluster$
 ```
+
+
+### 2nodeで実行
+続いて、2node-rj45での実行を行います。
+2node以上で実行するには、`lamma.cpp rpc`が必要であり、現在使用しているsifファイルは`lamma.cpp rpc`が入っていないので、新しく作り直します。
+以下のコマンドでDockerファイルを作成し、イメージをビルドしてください。
+```
+sudo mkdir -p /home4cluster/docker/llama-rpc
+sudo cat > /home4cluster/docker/llama-rpc/Dockerfile << 'EOF'
+FROM ghcr.io/ggml-org/llama.cpp:full-cuda AS base
+
+# llama.cppをRPC有効で再ビルド
+RUN apt-get update && apt-get install -y git cmake build-essential
+
+WORKDIR /build
+RUN git clone https://github.com/ggml-org/llama.cpp.git . && \
+    mkdir build && cd build && \
+    cmake .. -DGGML_CUDA=ON -DGGML_RPC=ON -DCMAKE_BUILD_TYPE=Release && \
+    cmake --build . --parallel 20
+
+# ビルドした実行ファイルを/appにコピー
+RUN cp /build/build/bin/* /app/ 2>/dev/null || true
+EOF
+
+cd /home4cluster/docker/llama-rpc
+docker build -t llama-cpp-rpc .
+
+```
+以下のコマンドでスクリプトを作成してください。
+```
+cat > /home4cluster/scripts/run_2node_qsfp_pair1.sh << 'EOF'
+#!/bin/bash
+# 2台推論テスト QSFP（pair1: node15↔16）
+
+SIF=/home4cluster/containers/llama.cpp_full-cuda.sif
+MODEL=/home4cluster/models/Qwen3-235B-A22B-Q2_K-00001-of-00002.gguf
+LOG=/home4cluster/logs/2node_qsfp_pair1_$(date +%Y%m%d_%H%M%S).log
+RPC_PORT=50052
+WORKER=node16
+WORKER_IP=10.0.1.2  # node16 QSFP IP
+
+echo "=== 2台推論テスト QSFP pair1 (node15↔node16) ===" | tee $LOG
+echo "開始: $(date)" | tee -a $LOG
+
+# node16でRPCサーバーを起動
+ssh mprg@$WORKER \
+  "singularity exec --nv --env LD_LIBRARY_PATH=/app $SIF \
+  /app/rpc-server --host $WORKER_IP --port $RPC_PORT" &
+SSH_PID=$!
+echo "RPCサーバー起動中（node16: $WORKER_IP:$RPC_PORT）..." | tee -a $LOG
+sleep 15
+
+# node15から推論実行
+singularity exec --nv --env LD_LIBRARY_PATH=/app $SIF \
+  /app/llama-bench \
+  --model $MODEL \
+  --n-gpu-layers 99 \
+  --rpc ${WORKER_IP}:${RPC_PORT} \
+  -p 128 -n 256 -r 3 2>&1 | tee -a $LOG
+
+# 後片付け
+echo "RPCサーバーを終了..." | tee -a $LOG
+ssh mprg@$WORKER "pkill -f rpc-server" 2>/dev/null
+wait $SSH_PID 2>/dev/null
+echo "終了: $(date)" | tee -a $LOG
+EOF
+```
+作成したスクリプトを実行して結果を確認してください。
+```
+
+```
