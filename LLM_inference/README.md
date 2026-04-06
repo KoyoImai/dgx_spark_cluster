@@ -185,6 +185,7 @@ bash /home4cluster/scripts/run_2node_qsfp_pair2.sh
 
 以下が結果です（メモ書き。あとで表にする）。
 ```
+# pair1 (node15-node16)
 | model                          |       size |     params | backend    | ngl |            test |                  t/s |
 | ------------------------------ | ---------: | ---------: | ---------- | --: | --------------: | -------------------: |
 | qwen3moe 235B.A22B Q2_K - Medium |  79.80 GiB |   235.09 B | CUDA,RPC   |  99 |           pp128 |        110.26 ± 5.50 |
@@ -193,4 +194,7 @@ ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 | qwen3moe 235B.A22B Q2_K - Medium |  79.80 GiB |   235.09 B | CUDA,RPC   |  99 |           tg256 |         16.50 ± 0.18 |
 Client connection closed
 
+build: 25eec6f32 (8672)
+RPCサーバーを終了...
+終了: Mon Apr  6 06:26:10 PM JST 2026
 ```
