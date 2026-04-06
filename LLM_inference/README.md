@@ -185,7 +185,6 @@ bash /home4cluster/scripts/run_2node_qsfp_pair2.sh
 
 以下が結果です（メモ書き。あとで表にする）。
 ```
-# pair1 (node15-node16)
 | model                          |       size |     params | backend    | ngl |            test |                  t/s |
 | ------------------------------ | ---------: | ---------: | ---------- | --: | --------------: | -------------------: |
 | qwen3moe 235B.A22B Q2_K - Medium |  79.80 GiB |   235.09 B | CUDA,RPC   |  99 |           pp128 |        110.26 ± 5.50 |
