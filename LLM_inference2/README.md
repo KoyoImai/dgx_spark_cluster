@@ -54,3 +54,23 @@ docker run --rm \
   --local-dir /models/gpt-oss-120b \
   --local-dir-use-symlinks False
 ```
+
+## ステップ5:1nodeでの動作確認
+1nodeで動作を確認します．
+以下のコマンドを実行してください．
+```
+docker run --rm --gpus all \
+  --network host --ipc host \
+  --ulimit memlock=-1 --ulimit stack=67108864 \
+  -v /home4cluster/models/hf:/models \
+  nvcr.io/nvidia/vllm:25.11-py3 \
+  vllm serve /models/gpt-oss-120b \
+    --host 0.0.0.0 \
+    --port 8000 \
+    --tensor-parallel-size 1 \
+    --gpu-memory-utilization 0.90 \
+    --enforce-eager \
+    --enable-expert-parallel \
+    --tool-call-parser openai \
+    --enable-auto-tool-choice
+```
