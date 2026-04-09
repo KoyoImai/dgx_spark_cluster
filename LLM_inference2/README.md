@@ -16,3 +16,9 @@ sudo systemctl start docker
 sudo systemctl enable docker
 sudo systemctl status docker
 ```
+
+## ステップ2:Docker Imageのpull
+Dockerの再インストールが完了したら，Docker Imageをpullします．
+以下のコマンドを実行して下さい．
+```
+```
