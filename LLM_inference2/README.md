@@ -84,3 +84,16 @@ curl http://localhost:8000/v1/chat/completions \
     "max_tokens": 512
   }'
 ```
+
+## ステップ6:node1つでベンチマーク
+**[参考](https://forums.developer.nvidia.com/t/6x-spark-setup/354399)**
+
+まず，ベンチマーク用データセットを準備します．
+以下のコマンドを管理者nodeで実行して，ShareGPTデータセットの準備をしてください．
+```
+docker run --rm \
+  -v /home4cluster:/home4cluster \
+  nvcr.io/nvidia/vllm:25.11-py3 \
+  wget -O /home4cluster/ShareGPT_V3_unfiltered_cleaned_split.json \
+  https://huggingface.co/datasets/anon8231489123/ShareGPT_Vicuna_unfiltered/resolve/main/ShareGPT_V3_unfiltered_cleaned_split.json
+```
