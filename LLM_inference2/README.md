@@ -57,7 +57,7 @@ docker run --rm \
 
 ## ステップ5:1nodeでの動作確認
 1nodeで動作を確認します．
-以下のコマンドを実行してください．
+まず，以下のコマンドを実行して推論サーバーを起動してください．
 ```
 docker run --rm --gpus all \
   --network host --ipc host \
@@ -73,4 +73,14 @@ docker run --rm --gpus all \
     --enable-expert-parallel \
     --tool-call-parser openai \
     --enable-auto-tool-choice
+```
+推論サーバーを起動したら，以下のコマンドを実行して推論を実行して下さい．
+```
+curl http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "/models/gpt-oss-120b",
+    "messages": [{"role": "user", "content": "日本語で自己紹介してください。"}],
+    "max_tokens": 512
+  }'
 ```
