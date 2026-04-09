@@ -21,4 +21,23 @@ sudo systemctl status docker
 Dockerの再インストールが完了したら，Docker Imageをpullします．
 以下のコマンドを実行して下さい．
 ```
+docker pull nvcr.io/nvidia/vllm:25.11-py3
+```
+
+## ステップ3:
+管理者nodeで`run_cluster.sh`を取得し，内容を修正します．
+以下のコマンドを実行して下さい．
+```
+cd /home4cluster/
+
+# スクリプトをダウンロード
+wget https://raw.githubusercontent.com/vllm-project/vllm/refs/heads/main/examples/online_serving/run_cluster.sh
+
+# headノードIPを引数で指定できるよう修正
+sed -i 's/RAY_START_CMD+=" --head --port=6379"/RAY_START_CMD+=" --head --node-ip-address=${HEAD_NODE_ADDRESS} --port=6379"/' run_cluster.sh
+
+chmod +x run_cluster.sh
+
+# 修正が正しく入っているか確認
+grep "node-ip-address" run_cluster.sh
 ```
