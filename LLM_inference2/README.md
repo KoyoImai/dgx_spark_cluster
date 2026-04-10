@@ -6,6 +6,30 @@ LLM_inferenc edえは，lamma.cpp RPCを用いた場合において，lamma-benc
 **[参考2:vLLM](https://licensecounter.jp/engineer-voice/blog/articles/20251219_dgx_spark_4vllm.html)**
 **[参考3:vLLM](https://zenn.dev/t0d4/articles/7d8951b7c40fba)**
 
+## 比較表
+### 測定条件
+- モデル：GPT-OSS-120B（MXFP4量子化）
+- 推論エンジン：vLLM 0.11.0（nvcr.io/nvidia/vllm:25.11-py3）
+- データセット：ShareGPT
+- ベンチマークツール：vllm bench serve
+
+### 結果一覧
+
+| パターン | node数 | NW | num-prompts | Output tok/s | Peak Output tok/s | TTFT中央値 (ms) | TPOT中央値 (ms) |
+|---|---:|---|---:|---:|---:|---:|---:|
+| 1台 | 1 | - | 1 | 30.76 | 32.00 | 89.70 | 31.95 |
+| 1台 | 1 | - | 10 | 67.98 | 115.00 | 1,328.91 | 80.59 |
+| 1台 | 1 | - | 100 | - | - | - | - |
+| 2台（QSFP） | 2 | QSFP 200Gbps | 1 | - | - | - | - |
+| 2台（QSFP） | 2 | QSFP 200Gbps | 10 | - | - | - | - |
+| 2台（QSFP） | 2 | QSFP 200Gbps | 100 | - | - | - | - |
+| 2台（RJ45） | 2 | RJ45 1Gbps | 1 | - | - | - | - |
+| 2台（RJ45） | 2 | RJ45 1Gbps | 10 | - | - | - | - |
+| 2台（RJ45） | 2 | RJ45 1Gbps | 100 | - | - | - | - |
+| 4台（RJ45） | 4 | RJ45 1Gbps | 1 | - | - | - | - |
+| 4台（RJ45） | 4 | RJ45 1Gbps | 10 | - | - | - | - |
+| 4台（RJ45） | 4 | RJ45 1Gbps | 100 | - | - | - | - |
+
 ## ステップ1：Dockerの再インストール
 Singularityインストール時に，ryncの依存関係問題でdocker-ceが削除されてしまっているので，Dockerを再インストールします．
 以下のコマンドを実行して下さい．
@@ -114,5 +138,29 @@ docker run --rm --gpus all \
     --enforce-eager \
     --enable-expert-parallel \
     --tool-call-parser openai \
-    --enable-auto-tool-choice
+    --enable-auto-tool-choice \
+    --served-model-name openai/gpt-oss-120b
 ```
+サーバー起動後，別のターミナルを起動し，node15で以下のコマンドを実行してください．
+```
+for NUM_PROMPTS in 1 10 100; do
+  echo "=== num-prompts=${NUM_PROMPTS} ===" | tee -a /home4cluster/logs/vllm/1node_$(date +%Y%m%d).log
+  docker run --rm \
+    --gpus all \
+    --network host \
+    -v /home4cluster:/home4cluster \
+    nvcr.io/nvidia/vllm:25.11-py3 \
+    vllm bench serve \
+      --backend vllm \
+      --model openai/gpt-oss-120b \
+      --host localhost \
+      --port 8000 \
+      --endpoint /v1/completions \
+      --dataset-name sharegpt \
+      --dataset-path /home4cluster/ShareGPT_V3_unfiltered_cleaned_split.json \
+      --num-prompts ${NUM_PROMPTS} \
+    2>&1 | tee -a /home4cluster/logs/vllm/1node_$(date +%Y%m%d).log
+  sleep 5
+done
+```
+
