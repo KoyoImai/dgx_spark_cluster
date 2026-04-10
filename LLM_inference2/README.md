@@ -267,3 +267,61 @@ for NUM_PROMPTS in 1 10 100; do
   sleep 5
 done
 ```
+
+## ステップ8:2nodeでのベンチマーク（RJ45）
+node15とnode16の2node構成でベンチマークを評価します．
+まず，node15（head）で以下のコマンドを実行して，Rayクラスタを起動してください．
+```
+export VLLM_IMAGE=nvcr.io/nvidia/vllm:25.11-py3
+export MN_IF_NAME=enP7s7
+export HEAD_IP=10.0.0.15
+
+bash /home4cluster/run_cluster.sh ${VLLM_IMAGE} ${HEAD_IP} --head \
+  /home4cluster/models/hf \
+  -e VLLM_HOST_IP=${HEAD_IP} \
+  -e UCX_NET_DEVICES=${MN_IF_NAME} \
+  -e NCCL_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e OMPI_MCA_btl_tcp_if_include=${MN_IF_NAME} \
+  -e GLOO_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e TP_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e RAY_memory_monitor_refresh_ms=0 \
+  -e MASTER_ADDR=${HEAD_IP}
+```
+その後，node16（worker）で以下のコマンドを実行し，クラスタに参加してください．
+```
+export VLLM_IMAGE=nvcr.io/nvidia/vllm:25.11-py3
+export MN_IF_NAME=enP7s7
+export HEAD_IP=10.0.0.15
+export WORKER_IP=10.0.0.16
+
+bash /home4cluster/run_cluster.sh ${VLLM_IMAGE} ${HEAD_IP} --worker \
+  /home4cluster/models/hf \
+  -e VLLM_HOST_IP=${WORKER_IP} \
+  -e UCX_NET_DEVICES=${MN_IF_NAME} \
+  -e NCCL_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e OMPI_MCA_btl_tcp_if_include=${MN_IF_NAME} \
+  -e GLOO_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e TP_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e RAY_memory_monitor_refresh_ms=0 \
+  -e MASTER_ADDR=${HEAD_IP}
+```
+node15とnode16の2node構成でクラスタが構築できていることを確認したら，1nodeのときと同様に，vLLMサーバーを起動します．
+以下のコマンドを実行して下さい．
+```
+# コンテナに入る
+docker exec -it node-9745 /bin/bash
+
+# vLLMサーバー起動
+vllm serve /root/.cache/huggingface/gpt-oss-120b \
+  --tensor-parallel-size 2 \
+  --enable-expert-parallel \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --gpu-memory-utilization 0.89 \
+  --enforce-eager \
+  --tool-call-parser openai \
+  --enable-auto-tool-choice \
+  --served-model-name openai/gpt-oss-120b
+```
+
+
