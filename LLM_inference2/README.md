@@ -97,3 +97,22 @@ docker run --rm \
   wget -O /home4cluster/ShareGPT_V3_unfiltered_cleaned_split.json \
   https://huggingface.co/datasets/anon8231489123/ShareGPT_Vicuna_unfiltered/resolve/main/ShareGPT_V3_unfiltered_cleaned_split.json
 ```
+データセットの準備が完了したら，vLLMサーバーを起動します．
+ここでは，node15でベンチマーク評価を行います．
+node15で以下のコマンドを実行して，vLLMサーバーを起動して下さい．
+```
+docker run --rm --gpus all \
+  --network host --ipc host \
+  --ulimit memlock=-1 --ulimit stack=67108864 \
+  -v /home4cluster/models/hf:/models \
+  nvcr.io/nvidia/vllm:25.11-py3 \
+  vllm serve /models/gpt-oss-120b \
+    --host 0.0.0.0 \
+    --port 8000 \
+    --tensor-parallel-size 1 \
+    --gpu-memory-utilization 0.90 \
+    --enforce-eager \
+    --enable-expert-parallel \
+    --tool-call-parser openai \
+    --enable-auto-tool-choice
+```
