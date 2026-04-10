@@ -231,4 +231,17 @@ From request_resources:
 Pending Demands:
  (no resource demands)
 ```
-
+node15とnode16の2node構成でクラスタが構築できていることを確認したら，1nodeのときと同様に，vLLMサーバーを起動します．
+以下のコマンドを実行して下さい．
+```
+vllm serve /root/.cache/huggingface/gpt-oss-120b \
+  --tensor-parallel-size 2 \
+  --enable-expert-parallel \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --gpu-memory-utilization 0.89 \
+  --enforce-eager \
+  --tool-call-parser openai \
+  --enable-auto-tool-choice \
+  --served-model-name openai/gpt-oss-120b
+```
