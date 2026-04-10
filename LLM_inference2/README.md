@@ -245,3 +245,25 @@ vllm serve /root/.cache/huggingface/gpt-oss-120b \
   --enable-auto-tool-choice \
   --served-model-name openai/gpt-oss-120b
 ```
+vLLMサーバー起動後，以下のコマンドで評価を実行して下さい．
+```
+for NUM_PROMPTS in 1 10 100; do
+  echo "=== num-prompts=${NUM_PROMPTS} ===" | tee -a /home4cluster/logs/vllm/2node_qsfp_pair1_$(date +%Y%m%d).log
+  docker run --rm \
+    --gpus all \
+    --network host \
+    -v /home4cluster:/home4cluster \
+    nvcr.io/nvidia/vllm:25.11-py3 \
+    vllm bench serve \
+      --backend vllm \
+      --model openai/gpt-oss-120b \
+      --host localhost \
+      --port 8000 \
+      --endpoint /v1/completions \
+      --dataset-name sharegpt \
+      --dataset-path /home4cluster/ShareGPT_V3_unfiltered_cleaned_split.json \
+      --num-prompts ${NUM_PROMPTS} \
+    2>&1 | tee -a /home4cluster/logs/vllm/2node_qsfp_pair1_$(date +%Y%m%d).log
+  sleep 5
+done
+```
