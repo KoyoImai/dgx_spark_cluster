@@ -164,3 +164,71 @@ for NUM_PROMPTS in 1 10 100; do
 done
 ```
 
+## ステップ7:2nodeでのベンチマーク
+node15とnode16の2node構成でベンチマークを評価します．
+まず，node15（head）で以下のコマンドを実行して，Rayクラスタを起動してください．
+```
+export VLLM_IMAGE=nvcr.io/nvidia/vllm:25.11-py3
+export MN_IF_NAME=enp1s0f0np0
+export HEAD_IP=10.0.1.1
+
+bash /home4cluster/run_cluster.sh ${VLLM_IMAGE} ${HEAD_IP} --head \
+  /home4cluster/models/hf \
+  -e VLLM_HOST_IP=${HEAD_IP} \
+  -e UCX_NET_DEVICES=${MN_IF_NAME} \
+  -e NCCL_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e OMPI_MCA_btl_tcp_if_include=${MN_IF_NAME} \
+  -e GLOO_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e TP_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e RAY_memory_monitor_refresh_ms=0 \
+  -e MASTER_ADDR=${HEAD_IP}
+```
+その後，node16（worker）で以下のコマンドを実行し，クラスタに参加してください．
+```
+export VLLM_IMAGE=nvcr.io/nvidia/vllm:25.11-py3
+export MN_IF_NAME=enp1s0f0np0
+export HEAD_IP=10.0.1.1
+export WORKER_IP=10.0.1.2
+
+bash /home4cluster/run_cluster.sh ${VLLM_IMAGE} ${HEAD_IP} --worker \
+  /home4cluster/models/hf \
+  -e VLLM_HOST_IP=${WORKER_IP} \
+  -e UCX_NET_DEVICES=${MN_IF_NAME} \
+  -e NCCL_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e OMPI_MCA_btl_tcp_if_include=${MN_IF_NAME} \
+  -e GLOO_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e TP_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e RAY_memory_monitor_refresh_ms=0 \
+  -e MASTER_ADDR=${HEAD_IP}
+```
+クラスタが組めているかを以下のコマンドで確認して下さい．
+```
+mprg@spark-fb97:~$ docker ps
+CONTAINER ID   IMAGE                           COMMAND                   CREATED              STATUS              PORTS     NAMES
+1da3039c0282   nvcr.io/nvidia/vllm:25.11-py3   "/bin/bash -c 'ray s…"   About a minute ago   Up About a minute             node-58
+mprg@spark-fb97:~$ docker exec node-58 ray status
+======== Autoscaler status: 2026-04-10 05:23:31.894412 ========
+Node status
+---------------------------------------------------------------
+Active:
+ 1 node_a81cfbad5c01fb9a0060b29a3698e0ec84f5ec6b0349790e329b7410
+ 1 node_4e6d26d7cb77af6e44029cf01b66e161eb5b03a9ecbd79ed6117ee36
+Pending:
+ (no pending nodes)
+Recent failures:
+ (no failures)
+
+Resources
+---------------------------------------------------------------
+Total Usage:
+ 0.0/40.0 CPU
+ 0.0/2.0 GPU
+ 0B/218.83GiB memory
+ 0B/19.46GiB object_store_memory
+
+From request_resources:
+ (none)
+Pending Demands:
+ (no resource demands)
+```
+
