@@ -12,6 +12,7 @@ LLM_inferenc edえは，lamma.cpp RPCを用いた場合において，lamma-benc
 - 推論エンジン：vLLM 0.11.0（nvcr.io/nvidia/vllm:25.11-py3）
 - データセット：ShareGPT
 - ベンチマークツール：vllm bench serve
+- All Reduce：Tensor Parallelism
 
 ### 結果一覧
 
