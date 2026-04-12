@@ -44,7 +44,61 @@ docker run --rm --gpus all \
 
 ## ステップ4:2台で動作確認
 node15とnode16の2台で動作確認を行います．
-
-
+`train.py`を修正するために以下のコマンドを実行します．
+```
+sed -i 's/use_fused = fused_available and device_type == .cuda./use_fused = False  # disabled: incompatible with GB10/' /home4cluster/nanochat/model.py
+```
+以下のコマンドをnode15で実行します．
+```
+docker run --rm --gpus all \
+  --network host --ipc host \
+  --ulimit memlock=-1 --ulimit stack=67108864 \
+  -v /home4cluster:/home4cluster \
+  -e NCCL_SOCKET_IFNAME=enP7s7 \
+  -e GLOO_SOCKET_IFNAME=enP7s7 \
+  -e NCCL_IB_DISABLE=1 \
+  -e NCCL_NET=Socket \
+  -e NCCL_P2P_DISABLE=1 \
+  nvcr.io/nvidia/vllm:25.11-py3 \
+  bash -c "
+    cd /home4cluster/nanochat &&
+    pip install -q tiktoken &&
+    torchrun \
+      --nnodes=2 --nproc_per_node=1 \
+      --node_rank=0 \
+      --master_addr=10.0.0.15 \
+      --master_port=29604 \
+      train.py config/train_shakespeare_char.py \
+      --max_iters=100 --log_interval=10 \
+      --gradient_accumulation_steps=2 \
+      --compile=False
+  " 2>&1 | tee /home4cluster/logs/train/2node_rj45_$(date +%Y%m%d).log
+```
+以下のコマンドをnode16で実行します．
+```
+docker run --rm --gpus all \
+  --network host --ipc host \
+  --ulimit memlock=-1 --ulimit stack=67108864 \
+  -v /home4cluster:/home4cluster \
+  -e NCCL_SOCKET_IFNAME=enP7s7 \
+  -e GLOO_SOCKET_IFNAME=enP7s7 \
+  -e NCCL_IB_DISABLE=1 \
+  -e NCCL_NET=Socket \
+  -e NCCL_P2P_DISABLE=1 \
+  nvcr.io/nvidia/vllm:25.11-py3 \
+  bash -c "
+    cd /home4cluster/nanochat &&
+    pip install -q tiktoken &&
+    torchrun \
+      --nnodes=2 --nproc_per_node=1 \
+      --node_rank=1 \
+      --master_addr=10.0.0.15 \
+      --master_port=29604 \
+      train.py config/train_shakespeare_char.py \
+      --max_iters=100 --log_interval=10 \
+      --gradient_accumulation_steps=2 \
+      --compile=False
+  "
+```
 
 
