@@ -69,7 +69,7 @@ docker run --rm \
   "
 ```
 
-## ステップ4
+## ステップ4:1nodeで動作確認
 ```
 docker run --rm --gpus all \
   --network host --ipc host \
@@ -87,10 +87,11 @@ docker run --rm --gpus all \
       --nnodes=1 --nproc_per_node=1 \
       --node_rank=0 \
       --master_addr=10.0.0.15 \
-      --master_port=29700 \
+      --master_port=29701 \
       -m scripts.base_train -- \
       --max-seq-len=2048 \
       --device-batch-size=21 \
-      --total-batch-size=86016
-  " 2>&1 | tee /home4cluster/logs/train/nanochat_1node_$(date +%Y%m%d).log
+      --total-batch-size=86016 \
+      --window-pattern L
+  " 2>&1 | tee /home4cluster/logs/train/nanochat_1node_windowL_$(date +%Y%m%d).log
 ```
