@@ -7,8 +7,6 @@ cd /home4cluster
 git clone https://github.com/karpathy/nanochat.git
 ```
 
-## ステップ2
-
 ```
 docker run --rm \
   -v /home4cluster:/home4cluster \
@@ -16,3 +14,83 @@ docker run --rm \
   bash -c "cd /home4cluster/nanochat && pip list | grep -E 'torch|triton'"
 ```
 
+## ステップ2:必要モジュールのインストール
+```
+docker run --rm \
+  -v /home4cluster:/home4cluster \
+  nvcr.io/nvidia/vllm:25.11-py3 \
+  bash -c "
+    pip install -q wandb pyarrow filelock jinja2 tokenizers psutil requests rustbpe tiktoken &&
+    echo '=== インストール完了 ==='
+```
+
+```
+docker run --rm \
+  -v /home4cluster:/home4cluster \
+  nvcr.io/nvidia/vllm:25.11-py3 \
+  bash -c "
+    pip install -q wandb pyarrow filelock jinja2 tokenizers psutil requests rustbpe tiktoken &&
+    python -c '
+import wandb
+import pyarrow
+import filelock
+import jinja2
+import tokenizers
+import psutil
+import requests
+import rustbpe
+import tiktoken
+print(\"全モジュールのimport成功\")
+'
+  "
+```
+
+## ステップ3
+```
+docker run --rm \
+  -v /home4cluster:/home4cluster \
+  -e NANOCHAT_BASE_DIR=/home4cluster/nanochat_data \
+  nvcr.io/nvidia/vllm:25.11-py3 \
+  bash -c "
+    pip install -q wandb pyarrow filelock jinja2 tokenizers psutil requests rustbpe tiktoken &&
+    cd /home4cluster/nanochat &&
+    python -m scripts.tok_train
+  "
+```
+```
+docker run --rm \
+  -v /home4cluster:/home4cluster \
+  -e NANOCHAT_BASE_DIR=/home4cluster/nanochat_data \
+  nvcr.io/nvidia/vllm:25.11-py3 \
+  bash -c "
+    pip install -q wandb pyarrow filelock jinja2 tokenizers psutil requests rustbpe tiktoken &&
+    cd /home4cluster/nanochat &&
+    python -m nanochat.dataset -n 10
+  "
+```
+
+## ステップ4
+```
+docker run --rm --gpus all \
+  --network host --ipc host \
+  --ulimit memlock=-1 --ulimit stack=67108864 \
+  -v /home4cluster:/home4cluster \
+  -e NCCL_NET=Socket \
+  -e NCCL_P2P_DISABLE=1 \
+  -e WANDB_MODE=disabled \
+  -e NANOCHAT_BASE_DIR=/home4cluster/nanochat_data \
+  nvcr.io/nvidia/vllm:25.11-py3 \
+  bash -c "
+    pip install -q wandb pyarrow filelock jinja2 tokenizers psutil requests rustbpe tiktoken &&
+    cd /home4cluster/nanochat &&
+    torchrun \
+      --nnodes=1 --nproc_per_node=1 \
+      --node_rank=0 \
+      --master_addr=10.0.0.15 \
+      --master_port=29700 \
+      -m scripts.base_train -- \
+      --max-seq-len=2048 \
+      --device-batch-size=21 \
+      --total-batch-size=86016
+  " 2>&1 | tee /home4cluster/logs/train/nanochat_1node_$(date +%Y%m%d).log
+```
