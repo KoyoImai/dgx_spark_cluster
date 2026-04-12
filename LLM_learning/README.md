@@ -211,3 +211,60 @@ docker run --rm --gpus all \
       --compile=False
   "
 ```
+
+
+## ステップ6:2台で動作確認（QSFP）
+node15で実行．
+```
+docker run --rm --gpus all \
+  --network host --ipc host \
+  --ulimit memlock=-1 --ulimit stack=67108864 \
+  -v /home4cluster:/home4cluster \
+  -e NCCL_SOCKET_IFNAME=enp1s0f0np0 \
+  -e GLOO_SOCKET_IFNAME=enp1s0f0np0 \
+  -e NCCL_IB_DISABLE=1 \
+  -e NCCL_NET=Socket \
+  -e NCCL_P2P_DISABLE=1 \
+  nvcr.io/nvidia/vllm:25.11-py3 \
+  bash -c "
+    cd /home4cluster/nanochat &&
+    pip install -q tiktoken &&
+    torchrun \
+      --nnodes=2 --nproc_per_node=1 \
+      --node_rank=0 \
+      --master_addr=10.0.1.1 \
+      --master_port=29610 \
+      train.py config/train_shakespeare_char.py \
+      --max_iters=100 --log_interval=10 \
+      --gradient_accumulation_steps=2 \
+      --compile=False
+  " 2>&1 | tee /home4cluster/logs/train/2node_qsfp_$(date +%Y%m%d).log
+```
+node16で実行
+```
+docker run --rm --gpus all \
+  --network host --ipc host \
+  --ulimit memlock=-1 --ulimit stack=67108864 \
+  -v /home4cluster:/home4cluster \
+  -e NCCL_SOCKET_IFNAME=enp1s0f0np0 \
+  -e GLOO_SOCKET_IFNAME=enp1s0f0np0 \
+  -e NCCL_IB_DISABLE=1 \
+  -e NCCL_NET=Socket \
+  -e NCCL_P2P_DISABLE=1 \
+  nvcr.io/nvidia/vllm:25.11-py3 \
+  bash -c "
+    cd /home4cluster/nanochat &&
+    pip install -q tiktoken &&
+    torchrun \
+      --nnodes=2 --nproc_per_node=1 \
+      --node_rank=1 \
+      --master_addr=10.0.1.1 \
+      --master_port=29610 \
+      train.py config/train_shakespeare_char.py \
+      --max_iters=100 --log_interval=10 \
+      --gradient_accumulation_steps=2 \
+      --compile=False
+  "
+```
+
+
