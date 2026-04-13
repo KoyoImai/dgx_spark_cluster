@@ -144,7 +144,7 @@ docker run --rm --gpus all \
 ```
 サーバー起動後，別のターミナルを起動し，node15で以下のコマンドを実行してください．
 ```
-for NUM_PROMPTS in 1 10 100; do
+for NUM_PROMPTS in 1 10 100 250; do
   echo "=== num-prompts=${NUM_PROMPTS} ===" | tee -a /home4cluster/logs/vllm/1node_$(date +%Y%m%d).log
   docker run --rm \
     --gpus all \
