@@ -159,6 +159,7 @@ for NUM_PROMPTS in 1 10 100; do
       --endpoint /v1/completions \
       --dataset-name sharegpt \
       --dataset-path /home4cluster/ShareGPT_V3_unfiltered_cleaned_split.json \
+      --seed 42 \
       --num-prompts ${NUM_PROMPTS} \
     2>&1 | tee -a /home4cluster/logs/vllm/1node_$(date +%Y%m%d).log
   sleep 5
