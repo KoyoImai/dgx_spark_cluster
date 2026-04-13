@@ -249,7 +249,7 @@ vllm serve /root/.cache/huggingface/gpt-oss-120b \
 ```
 vLLMサーバー起動後，以下のコマンドで評価を実行して下さい．
 ```
-for NUM_PROMPTS in 1 10 100; do
+for NUM_PROMPTS in 1 10 100 250; do
   echo "=== num-prompts=${NUM_PROMPTS} ===" | tee -a /home4cluster/logs/vllm/2node_qsfp_pair1_$(date +%Y%m%d).log
   docker run --rm \
     --gpus all \
