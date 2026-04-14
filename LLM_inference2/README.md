@@ -328,7 +328,7 @@ vllm serve /root/.cache/huggingface/gpt-oss-120b \
 ```
 
 ```
-for NUM_PROMPTS in 1 10 100; do
+for NUM_PROMPTS in 1 10 100 250; do
   echo "=== num-prompts=${NUM_PROMPTS} ===" | tee -a /home4cluster/logs/vllm/2node_rj45_1g_$(date +%Y%m%d).log
   docker run --rm \
     --gpus all \
