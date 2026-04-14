@@ -250,7 +250,7 @@ bash /home4cluster/run_cluster_qsfp.sh  ${VLLM_IMAGE} ${HEAD_IP} --worker \
 # 公式ドキュメントに合わせて上記を修正
 bash /home4cluster/run_cluster_qsfp.sh  ${VLLM_IMAGE} ${HEAD_IP} --head \
   /home4cluster/models/hf \
-  -e VLLM_HOST_IP=${HEAD_IP} \
+  -e VLLM_HOST_IP=${WORKER_IP} \
   -e NCCL_SOCKET_IFNAME=${MN_IF_NAME} \
   -e UCX_NET_DEVICES=${MN_IF_NAME} \
   -e NCCL_IB_DISABLE=0 \
