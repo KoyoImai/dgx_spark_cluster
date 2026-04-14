@@ -178,6 +178,19 @@ done
 ```
 
 ## ステップ7:2nodeでのベンチマーク（QSFP）
+QSFPでやっても速度が向上しない場合，以下をコマンドを実行します．
+```
+# 現在の設定確認
+sysctl net.core.rmem_max
+sysctl net.core.wmem_max
+sysctl net.ipv4.tcp_rmem
+sysctl net.ipv4.tcp_wmem
+
+# チューニング例（BDP以上に設定）
+sudo sysctl -w net.core.rmem_max=67108864
+sudo sysctl -w net.core.wmem_max=67108864
+```
+
 node15とnode16の2node構成でベンチマークを評価します．
 まず，node15（head）で以下のコマンドを実行して，Rayクラスタを起動してください．
 ```
