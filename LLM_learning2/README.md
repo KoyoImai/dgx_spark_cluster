@@ -118,3 +118,25 @@ docker run --rm --gpus all \
       --num-iterations=30
   " 2>&1 | tee /home4cluster/logs/train/nanochat_1node_speed_$(date +%Y%m%d).log
 ```
+
+
+## ステップ5:Docker Imageを用意
+```
+# イメージのpull（約20GB，時間がかかります）
+docker pull nvcr.io/nvidia/pytorch:25.09-py3
+```
+環境を確認．
+```
+docker run --rm --gpus all \
+  nvcr.io/nvidia/pytorch:25.09-py3 \
+  bash -c "python -c \"
+import torch
+print('PyTorch:', torch.__version__)
+print('CUDA:', torch.version.cuda)
+try:
+    from flash_attn import flash_attn_func
+    print('Flash Attention: available')
+except ImportError:
+    print('Flash Attention: not available')
+\""
+```
