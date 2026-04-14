@@ -18,18 +18,19 @@ LLM_inferenc edえは，lamma.cpp RPCを用いた場合において，lamma-benc
 
 | パターン | node数 | NW | num-prompts | Output tok/s | Peak Output tok/s | TTFT中央値 (ms) | TTFT平均値 (ms) | P99TTFT (ms) | TPOT中央値 (ms) | TPOT平均値 (ms) | P99TPOT (ms) |
 |---|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 1台 | 1 | - | 1 |  |  |  |  |  |  |  |
-| 1台 | 1 | - | 10 |  |  |  |  |  |  |  |
-| 1台 | 1 | - | 100 |  |  |  |  |  |  |  |
-| 2台（QSFP）pair1 | 2 | QSFP 200Gbps | 1 |  |  |  |  |  |  |  |
-| 2台（QSFP）pair1 | 2 | QSFP 200Gbps | 10 |  |  |  |  |  |  |  |
-| 2台（QSFP）pair1 | 2 | QSFP 200Gbps | 100 |  |  |  |  |  |  |  |
-| 2台（RJ45）1Gbps | 2 | RJ45 1Gbps | 1 |  |  |  |  |  |  |  |
-| 2台（RJ45）1Gbps | 2 | RJ45 1Gbps | 10 |  |  |  |  |  |  |  |
-| 2台（RJ45）1Gbps | 2 | RJ45 1Gbps | 100 |  |  |  |  |  |  |  |
-| 4台（RJ45）1Gbps | 4 | RJ45 1Gbps | 1 |  |  |  |  |  |  |  |
-| 4台（RJ45）1Gbps | 4 | RJ45 1Gbps | 10 |  |  |  |  |  |  |  |
-| 4台（RJ45）1Gbps | 4 | RJ45 1Gbps | 100 |  |  |  |  |  |  |  |
+| 1台 | 1 | - | 1 | 32.28 | 33.00 | 71.73 | 71.73 | 71.73 | 30.64 | 30.64 | 30.64 |
+| 1台 | 1 | - | 10 | 83.11 | 117.00 | 244.92 | 263.32 | 265.92 | 66.76 | 67.26 | 76.60 |
+| 1台 | 1 | - | 100 |  |  |  |  |  |  |  |  |
+| 1台 | 1 | - | 250 |  |  |  |  |  |  |  |  |
+| 2台（QSFP）pair1 | 2 | QSFP 200Gbps | 1 |  |  |  |  |  |  |  |  |
+| 2台（QSFP）pair1 | 2 | QSFP 200Gbps | 10 |  |  |  |  |  |  |  |  |
+| 2台（QSFP）pair1 | 2 | QSFP 200Gbps | 100 |  |  |  |  |  |  |  |  |
+| 2台（RJ45）1Gbps | 2 | RJ45 1Gbps | 1 |  |  |  |  |  |  |  |  |
+| 2台（RJ45）1Gbps | 2 | RJ45 1Gbps | 10 |  |  |  |  |  |  |  |  |
+| 2台（RJ45）1Gbps | 2 | RJ45 1Gbps | 100 |  |  |  |  |  |  |  |  |
+| 4台（RJ45）1Gbps | 4 | RJ45 1Gbps | 1 |  |  |  |  |  |  |  |  |
+| 4台（RJ45）1Gbps | 4 | RJ45 1Gbps | 10 |  |  |  |  |  |  |  |  |
+| 4台（RJ45）1Gbps | 4 | RJ45 1Gbps | 100 |  |  |  |  |  |  |  |  |
 
 ## ステップ1：Dockerの再インストール
 Singularityインストール時に，ryncの依存関係問題でdocker-ceが削除されてしまっているので，Dockerを再インストールします．
