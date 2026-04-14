@@ -189,6 +189,9 @@ sysctl net.ipv4.tcp_wmem
 # チューニング例（BDP以上に設定）
 sudo sysctl -w net.core.rmem_max=67108864
 sudo sysctl -w net.core.wmem_max=67108864
+
+# 送信バッファも拡張する
+sudo sysctl -w net.ipv4.tcp_wmem="4096 16384 67108864"
 ```
 
 node15とnode16の2node構成でベンチマークを評価します．
