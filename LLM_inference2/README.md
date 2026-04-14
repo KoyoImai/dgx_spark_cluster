@@ -204,19 +204,8 @@ export VLLM_IMAGE=nvcr.io/nvidia/vllm:25.11-py3
 export MN_IF_NAME=enp1s0f0np0
 export HEAD_IP=10.0.1.1
 
-bash /home4cluster/run_cluster_qsfp.sh  ${VLLM_IMAGE} ${HEAD_IP} --head \
-  /home4cluster/models/hf \
-  -e VLLM_HOST_IP=${HEAD_IP} \
-  -e UCX_NET_DEVICES=${MN_IF_NAME} \
-  -e NCCL_SOCKET_IFNAME=${MN_IF_NAME} \
-  -e OMPI_MCA_btl_tcp_if_include=${MN_IF_NAME} \
-  -e GLOO_SOCKET_IFNAME=${MN_IF_NAME} \
-  -e TP_SOCKET_IFNAME=${MN_IF_NAME} \
-  -e RAY_memory_monitor_refresh_ms=0 \
-  -e MASTER_ADDR=${HEAD_IP}
-
 # 公式ドキュメントに合わせて上記を修正
-bash /home4cluster/run_cluster_qsfp.sh  ${VLLM_IMAGE} ${HEAD_IP} --head \
+bash /home4cluster/run_cluster_qsfp.sh ${VLLM_IMAGE} ${HEAD_IP} --head \
   /home4cluster/models/hf \
   -e VLLM_HOST_IP=${HEAD_IP} \
   -e NCCL_SOCKET_IFNAME=${MN_IF_NAME} \
@@ -235,17 +224,6 @@ export VLLM_IMAGE=nvcr.io/nvidia/vllm:25.11-py3
 export MN_IF_NAME=enp1s0f0np0
 export HEAD_IP=10.0.1.1
 export WORKER_IP=10.0.1.2
-
-bash /home4cluster/run_cluster_qsfp.sh  ${VLLM_IMAGE} ${HEAD_IP} --worker \
-  /home4cluster/models/hf \
-  -e VLLM_HOST_IP=${WORKER_IP} \
-  -e UCX_NET_DEVICES=${MN_IF_NAME} \
-  -e NCCL_SOCKET_IFNAME=${MN_IF_NAME} \
-  -e OMPI_MCA_btl_tcp_if_include=${MN_IF_NAME} \
-  -e GLOO_SOCKET_IFNAME=${MN_IF_NAME} \
-  -e TP_SOCKET_IFNAME=${MN_IF_NAME} \
-  -e RAY_memory_monitor_refresh_ms=0 \
-  -e MASTER_ADDR=${HEAD_IP}
 
 # 公式ドキュメントに合わせて上記を修正
 bash /home4cluster/run_cluster_qsfp.sh ${VLLM_IMAGE} ${HEAD_IP} --worker \
@@ -307,7 +285,7 @@ vllm serve /root/.cache/huggingface/gpt-oss-120b \
 vLLMサーバー起動後，以下のコマンドで評価を実行して下さい．
 ```
 for NUM_PROMPTS in 1 10 100 250; do
-  echo "=== num-prompts=${NUM_PROMPTS} ===" | tee -a /home4cluster/logs/vllm/2node_qsfp_pair1_$(date +%Y%m%d).log
+  echo "=== num-prompts=${NUM_PROMPTS} ===" | tee -a /home4cluster/logs/vllm/2node_qsfp_rdma_$(date +%Y%m%d).log
   docker run --rm \
     --gpus all \
     --network host \
@@ -323,7 +301,7 @@ for NUM_PROMPTS in 1 10 100 250; do
       --dataset-path /home4cluster/ShareGPT_V3_unfiltered_cleaned_split.json \
       --seed 42 \
       --num-prompts ${NUM_PROMPTS} \
-    2>&1 | tee -a /home4cluster/logs/vllm/2node_qsfp_pair1_$(date +%Y%m%d).log
+    2>&1 | tee -a /home4cluster/logs/vllm/2node_qsfp_rdma_$(date +%Y%m%d).log
   sleep 5
 done
 ```
