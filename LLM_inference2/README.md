@@ -204,7 +204,7 @@ export VLLM_IMAGE=nvcr.io/nvidia/vllm:25.11-py3
 export MN_IF_NAME=enp1s0f0np0
 export HEAD_IP=10.0.1.1
 
-bash /home4cluster/run_cluster.sh ${VLLM_IMAGE} ${HEAD_IP} --head \
+bash /home4cluster/run_cluster_qsfp.sh  ${VLLM_IMAGE} ${HEAD_IP} --head \
   /home4cluster/models/hf \
   -e VLLM_HOST_IP=${HEAD_IP} \
   -e UCX_NET_DEVICES=${MN_IF_NAME} \
@@ -216,7 +216,7 @@ bash /home4cluster/run_cluster.sh ${VLLM_IMAGE} ${HEAD_IP} --head \
   -e MASTER_ADDR=${HEAD_IP}
 
 # 公式ドキュメントに合わせて上記を修正
-bash /home4cluster/run_cluster.sh ${VLLM_IMAGE} ${HEAD_IP} --head \
+bash /home4cluster/run_cluster_qsfp.sh  ${VLLM_IMAGE} ${HEAD_IP} --head \
   /home4cluster/models/hf \
   -e VLLM_HOST_IP=${HEAD_IP} \
   -e NCCL_SOCKET_IFNAME=${MN_IF_NAME} \
@@ -236,7 +236,7 @@ export MN_IF_NAME=enp1s0f0np0
 export HEAD_IP=10.0.1.1
 export WORKER_IP=10.0.1.2
 
-bash /home4cluster/run_cluster.sh ${VLLM_IMAGE} ${HEAD_IP} --worker \
+bash /home4cluster/run_cluster_qsfp.sh  ${VLLM_IMAGE} ${HEAD_IP} --worker \
   /home4cluster/models/hf \
   -e VLLM_HOST_IP=${WORKER_IP} \
   -e UCX_NET_DEVICES=${MN_IF_NAME} \
@@ -248,7 +248,7 @@ bash /home4cluster/run_cluster.sh ${VLLM_IMAGE} ${HEAD_IP} --worker \
   -e MASTER_ADDR=${HEAD_IP}
 
 # 公式ドキュメントに合わせて上記を修正
-bash /home4cluster/run_cluster.sh ${VLLM_IMAGE} ${HEAD_IP} --head \
+bash /home4cluster/run_cluster_qsfp.sh  ${VLLM_IMAGE} ${HEAD_IP} --head \
   /home4cluster/models/hf \
   -e VLLM_HOST_IP=${HEAD_IP} \
   -e NCCL_SOCKET_IFNAME=${MN_IF_NAME} \
