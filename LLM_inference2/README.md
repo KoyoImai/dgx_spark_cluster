@@ -248,7 +248,7 @@ bash /home4cluster/run_cluster_qsfp.sh  ${VLLM_IMAGE} ${HEAD_IP} --worker \
   -e MASTER_ADDR=${HEAD_IP}
 
 # 公式ドキュメントに合わせて上記を修正
-bash /home4cluster/run_cluster_qsfp.sh  ${VLLM_IMAGE} ${HEAD_IP} --head \
+bash /home4cluster/run_cluster_qsfp.sh ${VLLM_IMAGE} ${HEAD_IP} --worker \
   /home4cluster/models/hf \
   -e VLLM_HOST_IP=${WORKER_IP} \
   -e NCCL_SOCKET_IFNAME=${MN_IF_NAME} \
