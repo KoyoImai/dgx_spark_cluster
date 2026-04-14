@@ -214,6 +214,20 @@ bash /home4cluster/run_cluster.sh ${VLLM_IMAGE} ${HEAD_IP} --head \
   -e TP_SOCKET_IFNAME=${MN_IF_NAME} \
   -e RAY_memory_monitor_refresh_ms=0 \
   -e MASTER_ADDR=${HEAD_IP}
+
+# 公式ドキュメントに合わせて上記を修正
+bash /home4cluster/run_cluster.sh ${VLLM_IMAGE} ${HEAD_IP} --head \
+  /home4cluster/models/hf \
+  -e VLLM_HOST_IP=${HEAD_IP} \
+  -e NCCL_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e UCX_NET_DEVICES=${MN_IF_NAME} \
+  -e NCCL_IB_DISABLE=0 \
+  -e NCCL_NET_GDR_LEVEL=5 \
+  -e GLOO_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e TP_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e RAY_memory_monitor_refresh_ms=0 \
+  -e MASTER_ADDR=${HEAD_IP}
+
 ```
 その後，node16（worker）で以下のコマンドを実行し，クラスタに参加してください．
 ```
@@ -228,6 +242,19 @@ bash /home4cluster/run_cluster.sh ${VLLM_IMAGE} ${HEAD_IP} --worker \
   -e UCX_NET_DEVICES=${MN_IF_NAME} \
   -e NCCL_SOCKET_IFNAME=${MN_IF_NAME} \
   -e OMPI_MCA_btl_tcp_if_include=${MN_IF_NAME} \
+  -e GLOO_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e TP_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e RAY_memory_monitor_refresh_ms=0 \
+  -e MASTER_ADDR=${HEAD_IP}
+
+# 公式ドキュメントに合わせて上記を修正
+bash /home4cluster/run_cluster.sh ${VLLM_IMAGE} ${HEAD_IP} --head \
+  /home4cluster/models/hf \
+  -e VLLM_HOST_IP=${HEAD_IP} \
+  -e NCCL_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e UCX_NET_DEVICES=${MN_IF_NAME} \
+  -e NCCL_IB_DISABLE=0 \
+  -e NCCL_NET_GDR_LEVEL=5 \
   -e GLOO_SOCKET_IFNAME=${MN_IF_NAME} \
   -e TP_SOCKET_IFNAME=${MN_IF_NAME} \
   -e RAY_memory_monitor_refresh_ms=0 \
