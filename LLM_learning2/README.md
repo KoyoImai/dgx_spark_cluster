@@ -94,4 +94,27 @@ docker run --rm --gpus all \
       --total-batch-size=86016 \
       --window-pattern L
   " 2>&1 | tee /home4cluster/logs/train/nanochat_1node_windowL_$(date +%Y%m%d).log
+
+docker run --rm --gpus all \
+  --network host --ipc host \
+  --ulimit memlock=-1 --ulimit stack=67108864 \
+  -v /home4cluster:/home4cluster \
+  -e WANDB_MODE=disabled \
+  -e NANOCHAT_BASE_DIR=/home4cluster/nanochat_data \
+  nvcr.io/nvidia/vllm:25.11-py3 \
+  bash -c "
+    pip install -q wandb pyarrow filelock jinja2 tokenizers psutil requests rustbpe tiktoken &&
+    cd /home4cluster/nanochat &&
+    torchrun \
+      --nnodes=1 --nproc_per_node=1 \
+      --node_rank=0 \
+      --master_addr=10.0.0.15 \
+      --master_port=29701 \
+      -m scripts.base_train -- \
+      --max-seq-len=2048 \
+      --device-batch-size=21 \
+      --total-batch-size=86016 \
+      --window-pattern L \
+      --num-iterations=30
+  " 2>&1 | tee /home4cluster/logs/train/nanochat_1node_speed_$(date +%Y%m%d).log
 ```
