@@ -13,6 +13,8 @@ LLM_inferenc edえは，lamma.cpp RPCを用いた場合において，lamma-benc
 - データセット：ShareGPT
 - ベンチマークツール：vllm bench serve
 - All Reduce：Tensor Parallelism
+- seed：42
+- warmup：1
 
 ### 結果一覧
 
