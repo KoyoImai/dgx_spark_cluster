@@ -192,6 +192,9 @@ sudo sysctl -w net.core.wmem_max=67108864
 
 # 送信バッファも拡張する
 sudo sysctl -w net.ipv4.tcp_wmem="4096 16384 67108864"
+sudo sysctl -w net.ipv4.tcp_rmem="4096 131072 67108864"
+sudo sysctl -w net.ipv4.tcp_congestion_control=bbr
+
 ```
 
 node15とnode16の2node構成でベンチマークを評価します．
