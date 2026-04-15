@@ -273,7 +273,7 @@ torchrun \
   --window-pattern L \
   --num-iterations=30 \
 2>&1 | tee /home4cluster/logs/train/nanochat_2node_rj45_$(date +%Y%m%d).log
-
+```
 
 ## ステップ9:4nodeでの学習評価（RJ45）
 全てのnodeでDockerコンテナを起動してください．
