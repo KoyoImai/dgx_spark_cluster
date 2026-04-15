@@ -167,3 +167,5 @@ docker run --rm --gpus all \
       --num-iterations=30
   " 2>&1 | tee /home4cluster/logs/train/nanochat_1node_pytorch_$(date +%Y%m%d).log
 ```
+
+## ステップ7:2nodeでの学習評価
