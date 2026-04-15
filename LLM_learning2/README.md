@@ -248,7 +248,7 @@ torchrun \
   -m scripts.base_train -- \
   --max-seq-len=2048 \
   --device-batch-size=21 \
-  --total-batch-size=172032 \
+  --total-batch-size=86016 \
   --window-pattern L \
   --num-iterations=30 \
 2>&1 | tee /home4cluster/logs/train/nanochat_4node_rj45_$(date +%Y%m%d).log
@@ -265,7 +265,7 @@ torchrun \
   -m scripts.base_train -- \
   --max-seq-len=2048 \
   --device-batch-size=21 \
-  --total-batch-size=172032 \
+  --total-batch-size=86016 \
   --window-pattern L \
   --num-iterations=30 \
 2>&1 | tee /home4cluster/logs/train/nanochat_4node_rj45_$(date +%Y%m%d).log
