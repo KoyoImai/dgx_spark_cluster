@@ -219,3 +219,62 @@ torchrun \
   --num-iterations=30 \
 2>&1 | tee /root/.cache/nanochat/nanochat_2node_qsfp_$(date +%Y%m%d).log
 ```
+
+
+## ステップ8:2nodeでの学習評価（RJ45）
+RJ45接続した2nodeでの学習を行います．
+まず，以下のコマンドをnode15とnode16で実行してください．
+```
+docker run --gpus all -it --rm \
+  --ipc=host --network=host \
+  --ulimit memlock=-1 --ulimit stack=67108864 \
+  -e WANDB_MODE=disabled \
+  -e NANOCHAT_BASE_DIR=/home4cluster/nanochat_data \
+  -v /home4cluster:/home4cluster \
+  -w /home4cluster/nanochat \
+  nvcr.io/nvidia/pytorch:25.09-py3
+```
+node15のコンテナ内で以下のコマンドを実行してください．
+```
+pip install -q wandb pyarrow filelock jinja2 tokenizers psutil requests rustbpe tiktoken &&
+pip install -q --upgrade protobuf
+
+NCCL_SOCKET_IFNAME=enP7s7 \
+torchrun \
+  --nproc_per_node=1 \
+  --nnodes=2 \
+  --node_rank=0 \
+  --master_addr=10.0.0.15 \
+  --master_port=29500 \
+  -m scripts.base_train -- \
+  --max-seq-len=2048 \
+  --device-batch-size=21 \
+  --total-batch-size=86016 \
+  --window-pattern L \
+  --num-iterations=30 \
+2>&1 | tee /home4cluster/logs/train/nanochat_2node_rj45_$(date +%Y%m%d).log
+```
+node16のコンテナ内で以下のコマンドを実行してください．
+```
+pip install -q wandb pyarrow filelock jinja2 tokenizers psutil requests rustbpe tiktoken &&
+pip install -q --upgrade protobuf
+
+NCCL_SOCKET_IFNAME=enP7s7 \
+torchrun \
+  --nproc_per_node=1 \
+  --nnodes=2 \
+  --node_rank=1 \
+  --master_addr=10.0.0.15 \
+  --master_port=29500 \
+  -m scripts.base_train -- \
+  --max-seq-len=2048 \
+  --device-batch-size=21 \
+  --total-batch-size=86016 \
+  --window-pattern L \
+  --num-iterations=30 \
+2>&1 | tee /home4cluster/logs/train/nanochat_2node_rj45_$(date +%Y%m%d).log
+```
+
+
+
+
