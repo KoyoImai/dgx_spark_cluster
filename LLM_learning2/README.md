@@ -273,6 +273,76 @@ torchrun \
   --window-pattern L \
   --num-iterations=30 \
 2>&1 | tee /home4cluster/logs/train/nanochat_2node_rj45_$(date +%Y%m%d).log
+
+
+## ステップ9:4nodeでの学習評価（RJ45）
+全てのnodeでDockerコンテナを起動してください．
+```
+docker run --gpus all -it --rm \
+  --ipc=host --network=host \
+  --ulimit memlock=-1 --ulimit stack=67108864 \
+  --device=/dev/infiniband \
+  -e WANDB_MODE=disabled \
+  -e NANOCHAT_BASE_DIR=/home4cluster/nanochat_data \
+  -v /home4cluster:/home4cluster \
+  -w /home4cluster/nanochat \
+  nvcr.io/nvidia/pytorch:25.09-py3
+
+pip install -q wandb pyarrow filelock jinja2 tokenizers psutil requests rustbpe tiktoken &&
+pip install -q --upgrade protobuf
+```
+各nodeで順番に実行する．
+```
+NCCL_SOCKET_IFNAME=enP7s7 \
+torchrun \
+  --nproc_per_node=1 --nnodes=4 --node_rank=0 \
+  --master_addr=10.0.0.15 --master_port=29500 \
+  -m scripts.base_train -- \
+  --max-seq-len=2048 \
+  --device-batch-size=21 \
+  --total-batch-size=172032 \
+  --window-pattern L \
+  --num-iterations=30 \
+2>&1 | tee /home4cluster/logs/train/nanochat_4node_rj45_$(date +%Y%m%d).log
+```
+```
+NCCL_SOCKET_IFNAME=enP7s7 \
+torchrun \
+  --nproc_per_node=1 --nnodes=4 --node_rank=1 \
+  --master_addr=10.0.0.15 --master_port=29500 \
+  -m scripts.base_train -- \
+  --max-seq-len=2048 \
+  --device-batch-size=21 \
+  --total-batch-size=172032 \
+  --window-pattern L \
+  --num-iterations=30 \
+2>&1 | tee /home4cluster/logs/train/nanochat_4node_rj45_$(date +%Y%m%d).log
+```
+```
+NCCL_SOCKET_IFNAME=enP7s7 \
+torchrun \
+  --nproc_per_node=1 --nnodes=4 --node_rank=2 \
+  --master_addr=10.0.0.15 --master_port=29500 \
+  -m scripts.base_train -- \
+  --max-seq-len=2048 \
+  --device-batch-size=21 \
+  --total-batch-size=172032 \
+  --window-pattern L \
+  --num-iterations=30 \
+2>&1 | tee /home4cluster/logs/train/nanochat_4node_rj45_$(date +%Y%m%d).log
+```
+```
+NCCL_SOCKET_IFNAME=enP7s7 \
+torchrun \
+  --nproc_per_node=1 --nnodes=4 --node_rank=3 \
+  --master_addr=10.0.0.15 --master_port=29500 \
+  -m scripts.base_train -- \
+  --max-seq-len=2048 \
+  --device-batch-size=21 \
+  --total-batch-size=172032 \
+  --window-pattern L \
+  --num-iterations=30 \
+2>&1 | tee /home4cluster/logs/train/nanochat_4node_rj45_$(date +%Y%m%d).log
 ```
 
 
