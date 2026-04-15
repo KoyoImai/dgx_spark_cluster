@@ -172,6 +172,20 @@ torchrun \
   --num-iterations=30 \
 2>&1 | tee /home4cluster/logs/train/nanochat_1node_$(date +%Y%m%d).log
 ```
+2パターン目の学習
+```
+NCCL_SOCKET_IFNAME=enP7s7 \
+torchrun \
+  --nproc_per_node=1 --nnodes=1 --node_rank=0 \
+  --master_addr=10.0.0.15 --master_port=29500 \
+  -m scripts.base_train -- \
+  --max-seq-len=2048 \
+  --device-batch-size=21 \
+  --total-batch-size=43008 \
+  --window-pattern L \
+  --num-iterations=100 \
+2>&1 | tee /home4cluster/logs/train/nanochat_1node_$(date +%Y%m%d).log
+```
 
 ## ステップ7:2nodeでの学習評価（QSFP）
 QSFP接続した2nodeでの学習を行います．
