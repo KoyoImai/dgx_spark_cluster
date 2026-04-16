@@ -7,7 +7,7 @@
 ```
 
 ## 事前準備
-### ステップ1:ペア1（node15+node16）で「RayクラスタとvLLMサーバーを起動
+### ステップ1:ペア1（node15+node16）でRayクラスタとvLLMサーバーを起動
 まず，ペア1でRayクラスタとvLLMサーバーを起動します．
 以下のコマンドをnode15（head）で実行してください．
 ```
@@ -109,8 +109,44 @@ sudo nginx -t
 sudo systemctl restart nginx
 ```
 
+### ステップ3:ペア2（node17+node18）でRayクラスタとvLLMサーバーを起動
+ステップ1と同様の手順で，ペア2でもRayクラスタとvLLMサーバーを起動します．
+node17（head）で以下のコマンドを実行してください．
+```
+export VLLM_IMAGE=nvcr.io/nvidia/vllm:25.11-py3
+export MN_IF_NAME=enp1s0f0np0
+export HEAD_IP=10.0.2.1
 
+bash /home4cluster/run_cluster_qsfp.sh ${VLLM_IMAGE} ${HEAD_IP} --head \
+  /home4cluster/models/hf \
+  -e VLLM_HOST_IP=${HEAD_IP} \
+  -e NCCL_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e UCX_NET_DEVICES=${MN_IF_NAME} \
+  -e NCCL_IB_DISABLE=0 \
+  -e NCCL_NET_GDR_LEVEL=5 \
+  -e GLOO_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e TP_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e RAY_memory_monitor_refresh_ms=0 \
+  -e MASTER_ADDR=${HEAD_IP}
+```
+nod18（worker）で以下のコマンドを実行してください．
+```
+export VLLM_IMAGE=nvcr.io/nvidia/vllm:25.11-py3
+export MN_IF_NAME=enp1s0f0np0
+export HEAD_IP=10.0.2.1
+export WORKER_IP=10.0.2.2
 
-
+bash /home4cluster/run_cluster_qsfp.sh ${VLLM_IMAGE} ${HEAD_IP} --worker \
+  /home4cluster/models/hf \
+  -e VLLM_HOST_IP=${WORKER_IP} \
+  -e NCCL_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e UCX_NET_DEVICES=${MN_IF_NAME} \
+  -e NCCL_IB_DISABLE=0 \
+  -e NCCL_NET_GDR_LEVEL=5 \
+  -e GLOO_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e TP_SOCKET_IFNAME=${MN_IF_NAME} \
+  -e RAY_memory_monitor_refresh_ms=0 \
+  -e MASTER_ADDR=${HEAD_IP}
+```
 
 
