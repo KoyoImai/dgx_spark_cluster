@@ -508,7 +508,7 @@ torchrun \
   --device-batch-size=5 \
   --total-batch-size=40960 \
   --window-pattern L \
-  --num-iterations=50 \
+  --num-iterations=500 \
 2>&1 | tee /home4cluster/logs/train/nanochat_4node_rj45_$(date +%Y%m%d).log
 ```
 ```
@@ -525,7 +525,7 @@ torchrun \
   --device-batch-size=5 \
   --total-batch-size=40960 \
   --window-pattern L \
-  --num-iterations=50 \
+  --num-iterations=500 \
 2>&1 | tee /home4cluster/logs/train/nanochat_4node_rj45_$(date +%Y%m%d).log
 ```
 ```
@@ -542,7 +542,7 @@ torchrun \
   --device-batch-size=5 \
   --total-batch-size=40960 \
   --window-pattern L \
-  --num-iterations=50 \
+  --num-iterations=500 \
 2>&1 | tee /home4cluster/logs/train/nanochat_4node_rj45_$(date +%Y%m%d).log
 ```
 ```
@@ -559,7 +559,7 @@ torchrun \
   --device-batch-size=5 \
   --total-batch-size=40960 \
   --window-pattern L \
-  --num-iterations=50 \
+  --num-iterations=500 \
 2>&1 | tee /home4cluster/logs/train/nanochat_4node_rj45_$(date +%Y%m%d).log
 ```
 
