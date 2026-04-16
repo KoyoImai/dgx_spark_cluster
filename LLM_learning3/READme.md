@@ -75,4 +75,49 @@ python tools/preprocess_data.py \
 
 
 
+### ステップ5：1nodeでの動作確認（node15）
+node15のコンテナ内で以下を実行してください．
+```
+GPUS_PER_NODE=1
+MASTER_ADDR=10.0.0.15
+MASTER_PORT=29500
+NNODES=1
+NODE_RANK=0
+
+torchrun \
+  --nproc_per_node $GPUS_PER_NODE \
+  --nnodes $NNODES \
+  --node_rank $NODE_RANK \
+  --master_addr $MASTER_ADDR \
+  --master_port $MASTER_PORT \
+  pretrain_gpt.py \
+  --tensor-model-parallel-size 1 \
+  --pipeline-model-parallel-size 1 \
+  --num-layers 12 \
+  --hidden-size 768 \
+  --num-attention-heads 12 \
+  --seq-length 1024 \
+  --max-position-embeddings 1024 \
+  --micro-batch-size 4 \
+  --global-batch-size 16 \
+  --train-iters 50 \
+  --tokenizer-type GPT2BPETokenizer \
+  --vocab-file /home4cluster/megatron_data/gpt2-vocab.json \
+  --merge-file /home4cluster/megatron_data/gpt2-merges.txt \
+  --data-path /home4cluster/megatron_data/shakespeare_text_document \
+  --split 900,50,50 \
+  --distributed-backend nccl \
+  --lr 0.00015 \
+  --min-lr 1.0e-5 \
+  --lr-decay-style cosine \
+  --weight-decay 1e-2 \
+  --clip-grad 1.0 \
+  --lr-warmup-iters 5 \
+  --bf16 \
+  --log-interval 10 \
+  --log-throughput \
+  2>&1 | tee /home4cluster/logs/train/megatron_1node_$(date +%Y%m%d).log
+```
+
+
 
