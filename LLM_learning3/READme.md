@@ -218,7 +218,7 @@ rank 2 (node17) ─── TP グループ B ───  rank 3 (node18)
 ```
 通信の内訳：
 TP通信（node15↔16、node17↔18）： QSFP経由でAll-Reduce（頻繁・大量）
-DP通信（node15↔17、node16↔18）： RJ45経由でAll-Reduce（勾配同期）****
+DP通信（node15↔17、node16↔18）： RJ45経由でAll-Reduce（勾配同期）
 ```
 
 全node（node15〜18）でDockerコンテナを起動します．
@@ -231,5 +231,165 @@ docker run --gpus all -it --rm \
   -w /home4cluster/Megatron-LM \
   nvcr.io/nvidia/pytorch:25.09-py3
 ```
+
+node15のコンテナ内で実行（rank 0）します．
+```
+NCCL_SOCKET_IFNAME=enP7s7 \
+torchrun \
+  --nproc_per_node 1 \
+  --nnodes 4 \
+  --node_rank 0 \
+  --master_addr 10.0.0.15 \
+  --master_port 29500 \
+  pretrain_gpt.py \
+  --tensor-model-parallel-size 2 \
+  --pipeline-model-parallel-size 1 \
+  --num-layers 12 \
+  --hidden-size 768 \
+  --num-attention-heads 12 \
+  --seq-length 1024 \
+  --max-position-embeddings 1024 \
+  --micro-batch-size 4 \
+  --global-batch-size 32 \
+  --train-iters 50 \
+  --tokenizer-type GPT2BPETokenizer \
+  --vocab-file /home4cluster/megatron_data/gpt2-vocab.json \
+  --merge-file /home4cluster/megatron_data/gpt2-merges.txt \
+  --data-path /home4cluster/megatron_data/shakespeare_text_document \
+  --split 900,50,50 \
+  --distributed-backend nccl \
+  --lr 0.00015 \
+  --min-lr 1.0e-5 \
+  --lr-decay-style cosine \
+  --weight-decay 1e-2 \
+  --clip-grad 1.0 \
+  --lr-warmup-iters 5 \
+  --bf16 \
+  --log-interval 10 \
+  --log-throughput \
+  2>&1 | tee /home4cluster/logs/train/megatron_4node_tp2dp2_$(date +%Y%m%d).log
+```
+
+node16のコンテナ内で実行（rank 1）します．
+```
+NCCL_SOCKET_IFNAME=enP7s7 \
+torchrun \
+  --nproc_per_node 1 \
+  --nnodes 4 \
+  --node_rank 1 \
+  --master_addr 10.0.0.15 \
+  --master_port 29500 \
+  pretrain_gpt.py \
+  --tensor-model-parallel-size 2 \
+  --pipeline-model-parallel-size 1 \
+  --num-layers 12 \
+  --hidden-size 768 \
+  --num-attention-heads 12 \
+  --seq-length 1024 \
+  --max-position-embeddings 1024 \
+  --micro-batch-size 4 \
+  --global-batch-size 32 \
+  --train-iters 50 \
+  --tokenizer-type GPT2BPETokenizer \
+  --vocab-file /home4cluster/megatron_data/gpt2-vocab.json \
+  --merge-file /home4cluster/megatron_data/gpt2-merges.txt \
+  --data-path /home4cluster/megatron_data/shakespeare_text_document \
+  --split 900,50,50 \
+  --distributed-backend nccl \
+  --lr 0.00015 \
+  --min-lr 1.0e-5 \
+  --lr-decay-style cosine \
+  --weight-decay 1e-2 \
+  --clip-grad 1.0 \
+  --lr-warmup-iters 5 \
+  --bf16 \
+  --log-interval 10 \
+  --log-throughput \
+  2>&1 | tee /home4cluster/logs/train/megatron_4node_tp2dp2_$(date +%Y%m%d).log
+```
+
+node17のコンテナ内で実行（rank 2）します．
+```
+NCCL_SOCKET_IFNAME=enP7s7 \
+torchrun \
+  --nproc_per_node 1 \
+  --nnodes 4 \
+  --node_rank 2 \
+  --master_addr 10.0.0.15 \
+  --master_port 29500 \
+  pretrain_gpt.py \
+  --tensor-model-parallel-size 2 \
+  --pipeline-model-parallel-size 1 \
+  --num-layers 12 \
+  --hidden-size 768 \
+  --num-attention-heads 12 \
+  --seq-length 1024 \
+  --max-position-embeddings 1024 \
+  --micro-batch-size 4 \
+  --global-batch-size 32 \
+  --train-iters 50 \
+  --tokenizer-type GPT2BPETokenizer \
+  --vocab-file /home4cluster/megatron_data/gpt2-vocab.json \
+  --merge-file /home4cluster/megatron_data/gpt2-merges.txt \
+  --data-path /home4cluster/megatron_data/shakespeare_text_document \
+  --split 900,50,50 \
+  --distributed-backend nccl \
+  --lr 0.00015 \
+  --min-lr 1.0e-5 \
+  --lr-decay-style cosine \
+  --weight-decay 1e-2 \
+  --clip-grad 1.0 \
+  --lr-warmup-iters 5 \
+  --bf16 \
+  --log-interval 10 \
+  --log-throughput \
+  2>&1 | tee /home4cluster/logs/train/megatron_4node_tp2dp2_$(date +%Y%m%d).log
+```
+
+node18のコンテナ内で実行（rank 3）します．
+```
+NCCL_SOCKET_IFNAME=enP7s7 \
+torchrun \
+  --nproc_per_node 1 \
+  --nnodes 4 \
+  --node_rank 3 \
+  --master_addr 10.0.0.15 \
+  --master_port 29500 \
+  pretrain_gpt.py \
+  --tensor-model-parallel-size 2 \
+  --pipeline-model-parallel-size 1 \
+  --num-layers 12 \
+  --hidden-size 768 \
+  --num-attention-heads 12 \
+  --seq-length 1024 \
+  --max-position-embeddings 1024 \
+  --micro-batch-size 4 \
+  --global-batch-size 32 \
+  --train-iters 50 \
+  --tokenizer-type GPT2BPETokenizer \
+  --vocab-file /home4cluster/megatron_data/gpt2-vocab.json \
+  --merge-file /home4cluster/megatron_data/gpt2-merges.txt \
+  --data-path /home4cluster/megatron_data/shakespeare_text_document \
+  --split 900,50,50 \
+  --distributed-backend nccl \
+  --lr 0.00015 \
+  --min-lr 1.0e-5 \
+  --lr-decay-style cosine \
+  --weight-decay 1e-2 \
+  --clip-grad 1.0 \
+  --lr-warmup-iters 5 \
+  --bf16 \
+  --log-interval 10 \
+  --log-throughput \
+  2>&1 | tee /home4cluster/logs/train/megatron_4node_tp2dp2_$(date +%Y%m%d).log
+```
+
+
+
+
+
+
+
+
 
 
