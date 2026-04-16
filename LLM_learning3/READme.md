@@ -74,8 +74,8 @@ python tools/preprocess_data.py \
 ```
 
 
-
-### ステップ5：1nodeでの動作確認（node15）
+## 動作確認
+### ステップ1：1nodeでの動作確認（node15）
 node15のコンテナ内で以下を実行してください．
 ```
 GPUS_PER_NODE=1
@@ -118,6 +118,93 @@ torchrun \
   --log-throughput \
   2>&1 | tee /home4cluster/logs/train/megatron_1node_$(date +%Y%m%d).log
 ```
+
+### ステップ2:2nodeでの動作確認
+node15とnode16でそれぞれDockerコンテナを起動します．
+```
+docker run --gpus all -it --rm \
+  --ipc=host --network=host \
+  --ulimit memlock=-1 --ulimit stack=67108864 \
+  --device=/dev/infiniband \
+  -v /home4cluster:/home4cluster \
+  -w /home4cluster/Megatron-LM \
+  nvcr.io/nvidia/pytorch:25.09-py3
+```
+node15で以下のコマンドを実行してください．
+```
+NCCL_SOCKET_IFNAME=enp1s0f0np0 \
+torchrun \
+  --nproc_per_node 1 \
+  --nnodes 2 \
+  --node_rank 0 \
+  --master_addr 10.0.1.1 \
+  --master_port 29500 \
+  pretrain_gpt.py \
+  --tensor-model-parallel-size 2 \
+  --pipeline-model-parallel-size 1 \
+  --num-layers 12 \
+  --hidden-size 768 \
+  --num-attention-heads 12 \
+  --seq-length 1024 \
+  --max-position-embeddings 1024 \
+  --micro-batch-size 4 \
+  --global-batch-size 16 \
+  --train-iters 50 \
+  --tokenizer-type GPT2BPETokenizer \
+  --vocab-file /home4cluster/megatron_data/gpt2-vocab.json \
+  --merge-file /home4cluster/megatron_data/gpt2-merges.txt \
+  --data-path /home4cluster/megatron_data/shakespeare_text_document \
+  --split 900,50,50 \
+  --distributed-backend nccl \
+  --lr 0.00015 \
+  --min-lr 1.0e-5 \
+  --lr-decay-style cosine \
+  --weight-decay 1e-2 \
+  --clip-grad 1.0 \
+  --lr-warmup-iters 5 \
+  --bf16 \
+  --log-interval 10 \
+  --log-throughput \
+  2>&1 | tee /home4cluster/logs/train/megatron_2node_qsfp_$(date +%Y%m%d).log
+```
+node16で以下のコマンドを実行してください．
+```
+NCCL_SOCKET_IFNAME=enp1s0f0np0 \
+torchrun \
+  --nproc_per_node 1 \
+  --nnodes 2 \
+  --node_rank 1 \
+  --master_addr 10.0.1.1 \
+  --master_port 29500 \
+  pretrain_gpt.py \
+  --tensor-model-parallel-size 2 \
+  --pipeline-model-parallel-size 1 \
+  --num-layers 12 \
+  --hidden-size 768 \
+  --num-attention-heads 12 \
+  --seq-length 1024 \
+  --max-position-embeddings 1024 \
+  --micro-batch-size 4 \
+  --global-batch-size 16 \
+  --train-iters 50 \
+  --tokenizer-type GPT2BPETokenizer \
+  --vocab-file /home4cluster/megatron_data/gpt2-vocab.json \
+  --merge-file /home4cluster/megatron_data/gpt2-merges.txt \
+  --data-path /home4cluster/megatron_data/shakespeare_text_document \
+  --split 900,50,50 \
+  --distributed-backend nccl \
+  --lr 0.00015 \
+  --min-lr 1.0e-5 \
+  --lr-decay-style cosine \
+  --weight-decay 1e-2 \
+  --clip-grad 1.0 \
+  --lr-warmup-iters 5 \
+  --bf16 \
+  --log-interval 10 \
+  --log-throughput \
+  2>&1 | tee /home4cluster/logs/train/megatron_2node_qsfp_$(date +%Y%m%d).log
+```
+
 
 
 
