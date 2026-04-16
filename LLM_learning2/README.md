@@ -499,7 +499,10 @@ docker run --gpus all -it --rm \
 pip install -q wandb pyarrow filelock jinja2 tokenizers psutil requests rustbpe tiktoken &&
 pip install -q --upgrade protobuf
 
-NCCL_SOCKET_IFNAME=enP7s7 \
+NCCL_SOCKET_IFNAME=enP7s7
+NCCL_IB_DISABLE=1
+NCCL_NET=Socket 
+NCCL_P2P_DISABLE=1 
 torchrun \
   --nproc_per_node=1 --nnodes=4 --node_rank=0 \
   --master_addr=10.0.0.15 --master_port=29500 \
@@ -516,7 +519,10 @@ torchrun \
 pip install -q wandb pyarrow filelock jinja2 tokenizers psutil requests rustbpe tiktoken &&
 pip install -q --upgrade protobuf
 
-NCCL_SOCKET_IFNAME=enP7s7 \
+NCCL_SOCKET_IFNAME=enP7s7
+NCCL_IB_DISABLE=1
+NCCL_NET=Socket 
+NCCL_P2P_DISABLE=1 
 torchrun \
   --nproc_per_node=1 --nnodes=4 --node_rank=1 \
   --master_addr=10.0.0.15 --master_port=29500 \
@@ -533,7 +539,10 @@ torchrun \
 pip install -q wandb pyarrow filelock jinja2 tokenizers psutil requests rustbpe tiktoken &&
 pip install -q --upgrade protobuf
 
-NCCL_SOCKET_IFNAME=enP7s7 \
+NCCL_SOCKET_IFNAME=enP7s7
+NCCL_IB_DISABLE=1
+NCCL_NET=Socket 
+NCCL_P2P_DISABLE=1 
 torchrun \
   --nproc_per_node=1 --nnodes=4 --node_rank=2 \
   --master_addr=10.0.0.15 --master_port=29500 \
@@ -550,7 +559,10 @@ torchrun \
 pip install -q wandb pyarrow filelock jinja2 tokenizers psutil requests rustbpe tiktoken &&
 pip install -q --upgrade protobuf
 
-NCCL_SOCKET_IFNAME=enP7s7 \
+NCCL_SOCKET_IFNAME=enP7s7
+NCCL_IB_DISABLE=1
+NCCL_NET=Socket 
+NCCL_P2P_DISABLE=1 
 torchrun \
   --nproc_per_node=1 --nnodes=4 --node_rank=3 \
   --master_addr=10.0.0.15 --master_port=29500 \
