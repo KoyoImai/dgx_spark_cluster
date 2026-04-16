@@ -392,7 +392,7 @@ torchrun \
 
 
 
-### ステップ4:4node（TP=2×DP=2，QSFP+RJ45混在）
+### ステップ4:4node（TP=2×DP=2，QSFP+RJ45混在）　**失敗**
 構成は以下のようになっています．
 ```
 rank 0 (node15) ─── TP グループ A ───  rank 1 (node16)
@@ -597,5 +597,70 @@ torchrun \
   --log-throughput \
   2>&1 | tee /home4cluster/logs/train/megatron_4node_mixed_$(date +%Y%m%d).log
 ```
+
+
+
+
+### ステップ4:4node（TP=2×DP=2，QSFP+RJ45混在）
+構成は以下のようになっています．
+```
+rank 0 (node15) ─── TP グループ A ───  rank 1 (node16)
+    ↕ DP通信 (RJ45)                         ↕ DP通信 (RJ45)
+rank 2 (node17) ─── TP グループ B ───  rank 3 (node18)
+```
+
+```
+通信の内訳：
+TP通信（node15↔16、node17↔18）： QSFP経由でAll-Reduce（頻繁・大量）
+DP通信（node15↔17、node16↔18）： RJ45経由でAll-Reduce（勾配同期）
+```
+
+全node（node15〜18）でDockerコンテナを起動します．
+```
+docker run --gpus all -it --rm \
+  --ipc=host --network=host \
+  --ulimit memlock=-1 --ulimit stack=67108864 \
+  --device=/dev/infiniband \
+  -v /home4cluster:/home4cluster \
+  -w /home4cluster/Megatron-LM \
+  nvcr.io/nvidia/pytorch:25.09-py3
+```
+まずトポロジーファイルを作成します．
+node15のコンテナ内で以下を実行してください．
+```
+cat > /home4cluster/nccl_comm_config.json << 'EOF'
+{
+  "tp": {
+    "NCCL_IB_DISABLE": "0",
+    "NCCL_IB_HCA": "rocep1s0f0"
+  },
+  "dp": {
+    "NCCL_IB_DISABLE": "1",
+    "NCCL_NET": "Socket",
+    "NCCL_SOCKET_IFNAME": "enP7s7"
+  }
+}
+EOF
+```
+その後，node15のコンテナ内で実行（rank 0）します．
+```
+
+```
+
+node16のコンテナ内で実行（rank 1）します．
+```
+
+```
+
+node17のコンテナ内で実行（rank 2）します．
+```
+
+```
+
+node18のコンテナ内で実行（rank 3）します．
+```
+
+```
+
 
 
