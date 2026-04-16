@@ -214,6 +214,13 @@ rank 0 (node15) ─── TP グループ A ───  rank 1 (node16)
     ↕ DP通信 (RJ45)                         ↕ DP通信 (RJ45)
 rank 2 (node17) ─── TP グループ B ───  rank 3 (node18)
 ```
+
+```
+通信の内訳：
+TP通信（node15↔16、node17↔18）： QSFP経由でAll-Reduce（頻繁・大量）
+DP通信（node15↔17、node16↔18）： RJ45経由でAll-Reduce（勾配同期）****
+```
+
 全node（node15〜18）でDockerコンテナを起動します．
 ```
 docker run --gpus all -it --rm \
