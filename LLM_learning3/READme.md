@@ -208,7 +208,7 @@ torchrun \
 
 
 
-### ステップ3:4node
+### ステップ3:4node（TP=2×DP=2，RJ45のみ）
 全node（node15〜18）でDockerコンテナを起動します．
 ```
 docker run --gpus all -it --rm \
