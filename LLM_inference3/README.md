@@ -7,7 +7,7 @@
 ```
 
 ## 事前準備
-### ステップ1:ペア1（node15+node16）でRayクラスタとvLLMサーバーを起動
+### ステップ1:ペア1（node15+node16）でRayクラスタを起動
 まず，ペア1でRayクラスタとvLLMサーバーを起動します．
 以下のコマンドをnode15（head）で実行してください．
 ```
@@ -109,7 +109,7 @@ sudo nginx -t
 sudo systemctl restart nginx
 ```
 
-### ステップ3:ペア2（node17+node18）でRayクラスタとvLLMサーバーを起動
+### ステップ3:ペア2（node17+node18）でRayクラスタを起動
 ステップ1と同様の手順で，ペア2でもRayクラスタとvLLMサーバーを起動します．
 node17（head）で以下のコマンドを実行してください．
 ```
@@ -147,6 +147,37 @@ bash /home4cluster/run_cluster_qsfp.sh ${VLLM_IMAGE} ${HEAD_IP} --worker \
   -e TP_SOCKET_IFNAME=${MN_IF_NAME} \
   -e RAY_memory_monitor_refresh_ms=0 \
   -e MASTER_ADDR=${HEAD_IP}
+```
+
+
+### ステップ4：vLLMサーバーの起動
+まず，pair1（node15とnode16）でvLLMサーバーを起動します．
+node15のコンテナ内で以下のコマンドを実行してください．
+```
+vllm serve /root/.cache/huggingface/gpt-oss-120b \
+  --tensor-parallel-size 2 \
+  --enable-expert-parallel \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --gpu-memory-utilization 0.89 \
+  --enforce-eager \
+  --tool-call-parser openai \
+  --enable-auto-tool-choice \
+  --served-model-name openai/gpt-oss-120b
+```
+続いて，pair2（node17とnode18）でもvLLMサーバーを起動します．
+以下のコマンドを，node17のコンテナ内で実行して下さい．
+```
+vllm serve /root/.cache/huggingface/gpt-oss-120b \
+  --tensor-parallel-size 2 \
+  --enable-expert-parallel \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --gpu-memory-utilization 0.89 \
+  --enforce-eager \
+  --tool-call-parser openai \
+  --enable-auto-tool-choice \
+  --served-model-name openai/gpt-oss-120b
 ```
 
 
