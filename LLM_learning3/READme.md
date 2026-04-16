@@ -7,34 +7,30 @@
 ```
 
 ## 前準備
-### ステップ1:動作確認
-node15で以下のコマンドを順番に実行して，動作確認を行なってください．
+### ステップ1:リポジトリのクローン
+管理者node8で，リポジトリをクローンします．
+```
+cd /home4cluster
+git clone https://github.com/llm-jp/Megatron-LM.git
+cd Megatron-LM
+```
+
+### ステップ2:Dockerコンテナの起動
+node15で以下を実行してください．
 ```
 docker run --gpus all -it --rm \
   --ipc=host --network=host \
   --ulimit memlock=-1 --ulimit stack=67108864 \
   --device=/dev/infiniband \
-  -e WANDB_MODE=disabled \
-  -e NANOCHAT_BASE_DIR=/home4cluster/nanochat_data \
   -v /home4cluster:/home4cluster \
-  -w /home4cluster/nanochat \
+  -w /home4cluster/Megatron-LM \
   nvcr.io/nvidia/pytorch:25.09-py3
 ```
-```
-pip install -q wandb pyarrow filelock jinja2 tokenizers psutil requests rustbpe tiktoken &&
-pip install -q --upgrade protobuf
 
-NCCL_SOCKET_IFNAME=enP7s7 \
-torchrun \
-  --nproc_per_node=1 --nnodes=1 --node_rank=0 \
-  --master_addr=10.0.0.15 --master_port=29500 \
-  -m scripts.base_train -- \
-  --max-seq-len=2048 \
-  --device-batch-size=2 \
-  --total-batch-size=40960 \
-  --window-pattern L \
-  --num-iterations=500 \
-2>&1 | tee /home4cluster/logs/train/nanochat_1node_$(date +%Y%m%d).log
+### ステップ3:依存パッケージのインストール
+```
+cd /home4cluster/Megatron-LM
+pip install -e .
 ```
 
 
