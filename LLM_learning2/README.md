@@ -379,7 +379,7 @@ torchrun \
   --master_addr=10.0.0.18 --master_port=29500 \
   -m scripts.base_train -- \
   --max-seq-len=2048 \
-  --device-batch-size=2 \
+  --device-batch-size=20 \
   --total-batch-size=40960 \
   --window-pattern L \
   --num-iterations=500 \
