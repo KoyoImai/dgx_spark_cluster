@@ -235,6 +235,7 @@ docker run --gpus all -it --rm \
 node15のコンテナ内で実行（rank 0）します．
 ```
 NCCL_SOCKET_IFNAME=enP7s7 \
+GLOO_SOCKET_IFNAME=enP7s7 \
 torchrun \
   --nproc_per_node 1 \
   --nnodes 4 \
@@ -273,6 +274,7 @@ torchrun \
 node16のコンテナ内で実行（rank 1）します．
 ```
 NCCL_SOCKET_IFNAME=enP7s7 \
+GLOO_SOCKET_IFNAME=enP7s7 \
 torchrun \
   --nproc_per_node 1 \
   --nnodes 4 \
@@ -311,6 +313,7 @@ torchrun \
 node17のコンテナ内で実行（rank 2）します．
 ```
 NCCL_SOCKET_IFNAME=enP7s7 \
+GLOO_SOCKET_IFNAME=enP7s7 \
 torchrun \
   --nproc_per_node 1 \
   --nnodes 4 \
@@ -349,6 +352,7 @@ torchrun \
 node18のコンテナ内で実行（rank 3）します．
 ```
 NCCL_SOCKET_IFNAME=enP7s7 \
+GLOO_SOCKET_IFNAME=enP7s7 \
 torchrun \
   --nproc_per_node 1 \
   --nnodes 4 \
