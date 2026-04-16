@@ -205,4 +205,26 @@ vllm serve /root/.cache/huggingface/gpt-oss-120b \
   --served-model-name openai/gpt-oss-120b
 ```
 
-
+### ステップ5:実行
+```
+for NUM_PROMPTS in 1 10 100 250; do
+  echo "=== num-prompts=${NUM_PROMPTS} ===" | tee -a /home4cluster/logs/vllm/2pair_qsfp_lb_$(date +%Y%m%d).log
+  docker run --rm \
+    --gpus all \
+    --network host \
+    -v /home4cluster:/home4cluster \
+    nvcr.io/nvidia/vllm:25.11-py3 \
+    vllm bench serve \
+      --backend vllm \
+      --model openai/gpt-oss-120b \
+      --host 10.0.0.8 \
+      --port 9000 \
+      --endpoint /v1/completions \
+      --dataset-name sharegpt \
+      --dataset-path /home4cluster/ShareGPT_V3_unfiltered_cleaned_split.json \
+      --seed 42 \
+      --num-prompts ${NUM_PROMPTS} \
+    2>&1 | tee -a /home4cluster/logs/vllm/2pair_qsfp_lb_$(date +%Y%m%d).log
+  sleep 5
+done
+```
