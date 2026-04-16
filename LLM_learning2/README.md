@@ -356,7 +356,7 @@ torchrun \
 ```
 
 
-## ステップ9:比較評価
+## ステップ10:比較評価
 ### 1node
 ```
 docker run --gpus all -it --rm \
