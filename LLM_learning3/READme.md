@@ -36,3 +36,12 @@ torchrun \
   --num-iterations=500 \
 2>&1 | tee /home4cluster/logs/train/nanochat_1node_$(date +%Y%m%d).log
 ```
+
+
+### ステップ2:node15とnode16で　動作確認
+2node（node15とnode16）での動作確認を行います．
+
+
+
+
+
