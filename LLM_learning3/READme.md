@@ -1,9 +1,9 @@
 # LLMの学習速度評価
 以下のように，QSFP接続した状態を1つのnodeとして捉えて，LLMの推論を行う．
 ```
-[node15]---QSFP---[node16] ┐
-                          RJ45  → 学習 → ベンチマーク
-[node17]---QSFP---[node18] ┘
+[node15+16] = 仮想GPU① (256GB)   ← 内部通信はQSFP
+      ↕ RJ45 1Gbps
+[node17+18] = 仮想GPU② (256GB)   ← 内部通信はQSFP
 ```
 
 ## 前準備
