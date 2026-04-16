@@ -207,4 +207,22 @@ torchrun \
 
 
 
+### ステップ3:4node（TP=2×DP=2，QSFP+RJ45混在）
+構成は以下のようになっています．
+"""
+rank 0 (node15) ─── TP グループ A ───  rank 1 (node16)
+    ↕ DP通信 (RJ45)                         ↕ DP通信 (RJ45)
+rank 2 (node17) ─── TP グループ B ───  rank 3 (node18)
+"""
+全node（node15〜18）でDockerコンテナを起動します．
+```
+docker run --gpus all -it --rm \
+  --ipc=host --network=host \
+  --ulimit memlock=-1 --ulimit stack=67108864 \
+  --device=/dev/infiniband \
+  -v /home4cluster:/home4cluster \
+  -w /home4cluster/Megatron-LM \
+  nvcr.io/nvidia/pytorch:25.09-py3
+```
+
 
