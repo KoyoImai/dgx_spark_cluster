@@ -34,9 +34,44 @@ pip install -e .
 ```
 
 
-### ステップ2:node15とnode16で　動作確認
-2node（node15とnode16）での動作確認を行います．
+### ステップ4：Shakespeareデータの準備
+まず生テキストをダウンロードします．
+コンテナ内で以下を実行してください．
+```
+mkdir -p /home4cluster/megatron_data
+wget -O /home4cluster/megatron_data/shakespeare.txt \
+  https://raw.githubusercontent.com/karpathy/char-rnn/master/data/tinyshakespeare/input.txt
+```
+ダウンロードしたテキストをMegatron用のJSON形式に変換します．
+```
+python3 -c "
+import json
+with open('/home4cluster/megatron_data/shakespeare.txt', 'r') as f:
+    text = f.read()
+with open('/home4cluster/megatron_data/shakespeare.jsonl', 'w') as f:
+    for line in text.split('\n\n'):
+        line = line.strip()
+        if line:
+            json.dump({'text': line}, f)
+            f.write('\n')
+"
+```
+続いてMegatron用バイナリ形式に変換します．
+```
+wget -O /home4cluster/megatron_data/gpt2-vocab.json \
+  https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-vocab.json
+wget -O /home4cluster/megatron_data/gpt2-merges.txt \
+  https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-merges.txt
 
+python tools/preprocess_data.py \
+  --input /home4cluster/megatron_data/shakespeare.jsonl \
+  --output-prefix /home4cluster/megatron_data/shakespeare \
+  --tokenizer-type GPT2BPETokenizer \
+  --vocab-file /home4cluster/megatron_data/gpt2-vocab.json \
+  --merge-file /home4cluster/megatron_data/gpt2-merges.txt \
+  --append-eod \
+  --workers 4
+```
 
 
 
