@@ -416,11 +416,27 @@ docker run --gpus all -it --rm \
   -w /home4cluster/Megatron-LM \
   nvcr.io/nvidia/pytorch:25.09-py3
 ```
-
-node15のコンテナ内で実行（rank 0）します．
+まずトポロジーファイルを作成します．
+node15のコンテナ内で以下を実行してください．
+```
+cat > /home4cluster/nccl_topo.xml << 'EOF'
+<system version="1">
+  <cpu numaid="0">
+    <gpu dev="0" sm="121" rank="0" gdr="1">
+      <net name="rocep1s0f0" dev="0" speed="200000" port="1" latency="0" maxconn="131072" gdr="1"/>
+      <net name="enP7s7" dev="0" speed="1000" port="1" latency="0" maxconn="131072" gdr="0"/>
+    </gpu>
+  </cpu>
+</system>
+EOF
+```
+その後，node15のコンテナ内で実行（rank 0）します．
 ```
 NCCL_SOCKET_IFNAME=enP7s7 \
 GLOO_SOCKET_IFNAME=enP7s7 \
+NCCL_IB_DISABLE=0 \
+NCCL_IB_HCA=rocep1s0f0 \
+NCCL_TOPO_FILE=/home4cluster/nccl_topo.xml \
 torchrun \
   --nproc_per_node 1 \
   --nnodes 4 \
@@ -453,13 +469,16 @@ torchrun \
   --bf16 \
   --log-interval 10 \
   --log-throughput \
-  2>&1 | tee /home4cluster/logs/train/megatron_4node_tp2dp2_$(date +%Y%m%d).log
+  2>&1 | tee /home4cluster/logs/train/megatron_4node_mixed_$(date +%Y%m%d).log
 ```
 
 node16のコンテナ内で実行（rank 1）します．
 ```
 NCCL_SOCKET_IFNAME=enP7s7 \
 GLOO_SOCKET_IFNAME=enP7s7 \
+NCCL_IB_DISABLE=0 \
+NCCL_IB_HCA=rocep1s0f0 \
+NCCL_TOPO_FILE=/home4cluster/nccl_topo.xml \
 torchrun \
   --nproc_per_node 1 \
   --nnodes 4 \
@@ -492,13 +511,16 @@ torchrun \
   --bf16 \
   --log-interval 10 \
   --log-throughput \
-  2>&1 | tee /home4cluster/logs/train/megatron_4node_tp2dp2_$(date +%Y%m%d).log
+  2>&1 | tee /home4cluster/logs/train/megatron_4node_mixed_$(date +%Y%m%d).log
 ```
 
 node17のコンテナ内で実行（rank 2）します．
 ```
 NCCL_SOCKET_IFNAME=enP7s7 \
 GLOO_SOCKET_IFNAME=enP7s7 \
+NCCL_IB_DISABLE=0 \
+NCCL_IB_HCA=rocep1s0f0 \
+NCCL_TOPO_FILE=/home4cluster/nccl_topo.xml \
 torchrun \
   --nproc_per_node 1 \
   --nnodes 4 \
@@ -531,13 +553,16 @@ torchrun \
   --bf16 \
   --log-interval 10 \
   --log-throughput \
-  2>&1 | tee /home4cluster/logs/train/megatron_4node_tp2dp2_$(date +%Y%m%d).log
+  2>&1 | tee /home4cluster/logs/train/megatron_4node_mixed_$(date +%Y%m%d).log
 ```
 
 node18のコンテナ内で実行（rank 3）します．
 ```
 NCCL_SOCKET_IFNAME=enP7s7 \
 GLOO_SOCKET_IFNAME=enP7s7 \
+NCCL_IB_DISABLE=0 \
+NCCL_IB_HCA=rocep1s0f0 \
+NCCL_TOPO_FILE=/home4cluster/nccl_topo.xml \
 torchrun \
   --nproc_per_node 1 \
   --nnodes 4 \
@@ -570,9 +595,7 @@ torchrun \
   --bf16 \
   --log-interval 10 \
   --log-throughput \
-  2>&1 | tee /home4cluster/logs/train/megatron_4node_tp2dp2_$(date +%Y%m%d).log
+  2>&1 | tee /home4cluster/logs/train/megatron_4node_mixed_$(date +%Y%m%d).log
 ```
-
-
 
 
