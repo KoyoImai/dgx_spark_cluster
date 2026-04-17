@@ -392,7 +392,6 @@ torchrun \
 docker run --gpus all -it --rm \
   --ipc=host --network=host \
   --ulimit memlock=-1 --ulimit stack=67108864 \
-  --device=/dev/infiniband \
   -e WANDB_MODE=disabled \
   -e NANOCHAT_BASE_DIR=/home4cluster/nanochat_data \
   -v /home4cluster:/home4cluster \
@@ -487,7 +486,6 @@ torchrun \
 docker run --gpus all -it --rm \
   --ipc=host --network=host \
   --ulimit memlock=-1 --ulimit stack=67108864 \
-  --device=/dev/infiniband \
   -e WANDB_MODE=disabled \
   -e NANOCHAT_BASE_DIR=/home4cluster/nanochat_data \
   -v /home4cluster:/home4cluster \
